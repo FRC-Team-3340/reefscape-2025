@@ -26,4 +26,32 @@ class MyRobot(wpi.TimedRobot):
         forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2))/(.5+(abs(self.controller.getRawAxis(0)) > 0.1))
         self.robot_drive.arcadeDrive(xSpeed=forward, zRotation=self.controller.getRawAxis(0))
     
-    
+    def autonomousInit(self):
+        self.timer = wpi.Timer()
+        self.stage = 0
+        self.timer.start()
+
+    def autonomousPeriodic(self):
+        match(self.stage):
+            case 0:
+                if self.timer.get() < 5:
+                    self.robot_drive.arcadeDrive(xSpeed=.75, zRotation=0)
+                else:
+                    self.stage+=1
+            case 1:
+                self.robot_drive.arcadeDrive(xSpeed=0, zRotation=0)
+                if self.timer.get() > 10:
+                    self.stage+=1
+            case 2:
+                if self.timer.get() < 15:
+                    self.robot_drive.arcadeDrive(xSpeed=-.75, zRotation=0)
+                else:
+                    self.stage += 1
+            case 3:
+                self.robot_drive.arcadeDrive(xSpeed=.0, zRotation=0)
+                self.timer.stop()
+
+
+            
+                    
+            
