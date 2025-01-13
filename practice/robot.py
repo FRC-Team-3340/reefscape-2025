@@ -27,7 +27,7 @@ class MyRobot(wpi.TimedRobot):
         #Setting max output (currently at 25% power)
         self.robot_drive.setMaxOutput(0.25)
 
-        wpi.cameraserver.CameraServer.launch("vision.py")    
+        wpi.cameraserver.CameraServer.launch()    
 
     # def robotPeriodic(self):
 
@@ -70,4 +70,5 @@ class MyRobot(wpi.TimedRobot):
 
             
                     
-            
+if __name__ == "__main__": 
+    wpi.run(MyRobot)
