@@ -1,5 +1,6 @@
 import wpilib as wpi
 import wpilib.drive as drive
+import wpilib.cameraserver as camserver
 import phoenix5 as p5
 
 class MyRobot(wpi.TimedRobot):
@@ -14,17 +15,35 @@ class MyRobot(wpi.TimedRobot):
         for i in range(4):
             motors.append(self.createCIM(i, p5.NeutralMode.Coast))
 
+        self.cs = wpi.CameraServer()
+
+
+        #Assigning motors to corressponding motor controllers (can change depending on wiring)
         self.left_train = wpi.MotorControllerGroup(motors[0], motors[1])
         self.right_train = wpi.MotorControllerGroup(motors[2], motors[3])
         
+        #Inverted so both sets of wheels (left + right) move in same direction
         self.left_train.setInverted(True)
 
+
         self.robot_drive = drive.DifferentialDrive(leftMotor=self.left_train, rightMotor=self.right_train)
+
+        #Setting max output (currently at 25% power)
         self.robot_drive.setMaxOutput(0.25)
 
+    def robotPeriodic(self):
+        self.cs.launch()
+
+    #Assigning buttons on selected controller to 
     def teleopPeriodic(self):
         forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2))/(.5+(abs(self.controller.getRawAxis(0)) > 0.1))
-        self.robot_drive.arcadeDrive(xSpeed=forward, zRotation=self.controller.getRawAxis(0))
+
+        try:
+
+            self.robot_drive.arcadeDrive(xSpeed=forward, zRotation=self.controller.getRawAxis(0))
+        except Exception:
+            raise Exception
+
     
     def autonomousInit(self):
         self.timer = wpi.Timer()
