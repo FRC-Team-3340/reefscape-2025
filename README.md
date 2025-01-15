@@ -22,6 +22,7 @@ Optional: Creating a Virtual Environment
 - Note: if you have multiple versions of Python, you may need to specify that you want to create a venv for Python 3.12, as noted below:
     - `py -3.12 -m venv ./(name-of-venv)` (Windows)
     - `python3.12 -m venv ./(name-of-venv)`
+- **WARNING**: ADD YOUR VENV TO .gitignore. PLEASE ADD THE NAME OF YOUR VENV TO THE .gitignore SO THAT YOUR COMMITS DO NOT TAKE FOREVER!!!
 
 
 Step 2: Installing RobotPy and our dependencies
