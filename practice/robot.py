@@ -41,6 +41,10 @@ class MyRobot(wpi.TimedRobot):
         self.robot_drive.setMaxOutput(0.25)
 
         self.elevator_motor = self.createSparkMax(6,rev.CANSparkMax.IdleMode.kBrake)
+        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, 100)
+        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, 100)
+        self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
+
 
         self.elevator_encoder = self.createSparkMaxEncoder(self.elevator_motor)
 
@@ -60,7 +64,7 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception
         
-        arm = (self.controller.getPOV() == 0, self.controller.getPOV() == 180)
+        arm = (self.controller.getPOV() == 0 -+ self.controller.getPOV() == 180)
 
         
 
