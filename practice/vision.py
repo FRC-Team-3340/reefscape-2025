@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from cscore import CameraServer as CS
+'''from cscore import CameraServer as CS
 
 
 def main():
@@ -34,4 +34,4 @@ def main():
         cv2.rectangle(mat, (100, 100), (400, 400), (255, 255, 255), 5)
 
         # Give the output stream a new image to display
-        outputStream.putFrame(mat)
+        outputStream.putFrame(mat)'''
