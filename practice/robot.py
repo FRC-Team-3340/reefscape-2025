@@ -23,13 +23,12 @@ class MyRobot(wpi.TimedRobot):
     def robotInit(self):
         self.controller = wpi.Joystick(0)
         motors = []
-        for i in range(5):
+        for i in range(4):
             motors.append(self.createCIM(can_id=i, neutral_mode=nm.Coast))
 
         # Assigning motors to corressponding motor controllers (can change depending on wiring)
         self.left_train = wpi.MotorControllerGroup(motors[0], motors[1])
         self.right_train = wpi.MotorControllerGroup(motors[2], motors[3])
-        self.addPeriodic
 
         # Inverted so both sets of wheels (left + right) move in same direction
         self.left_train.setInverted(True)
@@ -42,7 +41,7 @@ class MyRobot(wpi.TimedRobot):
 
         self.elevator_motor = self.createSparkMax(6,rev.CANSparkMax.IdleMode.kBrake)
         self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, 100)
-        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, 100)
+        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, -100)
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
 
@@ -58,13 +57,12 @@ class MyRobot(wpi.TimedRobot):
                    )/(.5+(abs(self.controller.getRawAxis(0)) > 0.1))
 
         try:
-
             self.robot_drive.arcadeDrive(
                 xSpeed=forward, zRotation=self.controller.getRawAxis(0))
         except Exception:
             raise Exception
         
-        arm = (self.controller.getPOV() == 0 -+ self.controller.getPOV() == 180)
+        arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
 
         
