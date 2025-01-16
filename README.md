@@ -44,7 +44,8 @@ For any of these commands, typing --help will tell you all its options.
 
 #### To-Do:
 Vision (est. time pending) - Lehansa, Santi?
-Movement ~3-4 days - Samuel
+
+Elevator movement ~2 days - Samuel
 
 ### Documentation for Code:
 
