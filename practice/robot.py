@@ -65,6 +65,7 @@ class MyRobot(wpi.TimedRobot):
             raise Exception
         
         arm = (self.controller.getPOV() == 0 -+ self.controller.getPOV() == 180)
+        self.elevator_motor.set(arm)
 
         
 
@@ -94,5 +95,3 @@ class MyRobot(wpi.TimedRobot):
                 self.timer.stop()
 
 
-if __name__ == "__main__":
-    wpi.run(MyRobot)
