@@ -4,23 +4,19 @@ import rev
 import phoenix5 as p5
 from phoenix5 import NeutralMode as nm
 
-
 class MyRobot(wpi.TimedRobot):
-    # Functions for creating objects relating to our motors
     def createCIM(self, can_id, neutral_mode: p5.NeutralMode):
-        '''Creates a motor controller object corresponding to a CTRE Talon SRX.'''
         motor = p5.WPI_TalonSRX(can_id)
         motor.setNeutralMode(neutral_mode)
         return motor
 
     def createSparkMax(self, can_id, neutral_mode: rev.CANSparkMax.IdleMode):
-        '''Creates a motor controller object corresponding to a REV Robotics Spark MAX.'''
-        motor = rev.CANSparkMax(can_id, neutral_mode)
+        motor = rev.CANSparkMax(can_id, rev.CANSparkLowLevel.MotorType.kBrushless)
         motor.setIdleMode(neutral_mode)
-        return motor
 
+        return motor
+    
     def createSparkMaxEncoder(self, controller: rev.CANSparkMax):
-        '''Creates a relative encoder object given '''
         encoder = controller.getEncoder()
         return encoder
 
@@ -43,18 +39,13 @@ class MyRobot(wpi.TimedRobot):
         # Setting max output (currently at 25% power)
         self.robot_drive.setMaxOutput(0.25)
 
-        self.elevator_motor = self.createSparkMax(
-            6, rev.CANSparkMax.IdleMode.kBrake)
-        self.elevator_motor.setSoftLimit(
-            rev.CANSparkMax.SoftLimitDirection.kForward, 100)
-        self.elevator_motor.setSoftLimit(
-            rev.CANSparkMax.SoftLimitDirection.kReverse, -100)
+        self.elevator_motor = self.createSparkMax(6,rev.CANSparkMax.IdleMode.kBrake)
+        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, 100)
+        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, -100)
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
-        self.elevator_encoder = self.createSparkMaxEncoder(self.elevator_motor)
 
-        self.control_scheme = "arcade"
-        self.arcade_drive_preference = "two-button"
+        self.elevator_encoder = self.createSparkMaxEncoder(self.elevator_motor)
 
         wpi.cameraserver.CameraServer.launch()
 
@@ -62,40 +53,19 @@ class MyRobot(wpi.TimedRobot):
 
     # Assigning buttons on selected controller to
     def teleopPeriodic(self):
-        match(self.control_scheme):
-            case("arcade"):
-                '''Arcade drive. Same configuration we used since 2023.'''
-                match(self.control_scheme):
-                    case("two-button"):
-                        '''Emulates the control scheme of a particular racing game on the Switch.'''
-                        acceleration = self.controller.getRawButton(
-                            2) - self.controller.getRawButton(1)
-                        rotation = self.controller.getRawAxis(0)
+        forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2)
+                   )/(.5+(abs(self.controller.getRawAxis(0)) > 0.1))
 
-                    case("arcade two-stick"):
-                        '''Most common configuration for Arcade.'''
-                        acceleration = self.controller.getRawAxis(1)
-                        rotation = self.controller.getRawAxis(3)
-
-                    case ("arcade single-stick"):
-                        '''One-stick control, like 2024.'''
-                        acceleration = self.controller.getRawAxis(1)
-                        rotation = self.controller.getRawAxis(0)
-
-                self.robot_drive.arcadeDrive(
-                    xSpeed=acceleration,
-                    zRotation=rotation
-                )
-
-            case("tank"):
-                '''Two sticks - corresponds to one wheel train.'''
-                self.robot_drive.tankDrive(
-                    leftSpeed=self.controller.getRawAxis(1),
-                    rightSpeed=self.controller.getRawAxis(3)
-                )
-
+        try:
+            self.robot_drive.arcadeDrive(
+                xSpeed=forward, zRotation=self.controller.getRawAxis(0))
+        except Exception:
+            raise Exception
+        
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
+
+        
 
     def autonomousInit(self):
         self.timer = wpi.Timer()
@@ -121,3 +91,5 @@ class MyRobot(wpi.TimedRobot):
             case 3:
                 self.robot_drive.arcadeDrive(xSpeed=.0, zRotation=0)
                 self.timer.stop()
+
+
