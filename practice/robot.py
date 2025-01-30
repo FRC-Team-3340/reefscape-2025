@@ -10,13 +10,13 @@ class MyRobot(wpi.TimedRobot):
         motor.setNeutralMode(neutral_mode)
         return motor
 
-    def createSparkMax(self, can_id, neutral_mode: rev.CANSparkMax.IdleMode):
-        motor = rev.CANSparkMax(can_id, rev.CANSparkLowLevel.MotorType.kBrushless)
-        motor.setIdleMode(neutral_mode)
+    def createSparkMax(self, can_id, neutral_mode: rev.SparkMax.IdleMode):
+        motor = rev.SparkMax(can_id, rev.SparkLowLevel.MotorType.kBrushless)
+        motor.IdleMode(neutral_mode)
 
         return motor
     
-    def createSparkMaxEncoder(self, controller: rev.CANSparkMax):
+    def createSparkMaxEncoder(self, controller: rev.SparkMax):
         encoder = controller.getEncoder()
         return encoder
 
@@ -39,9 +39,7 @@ class MyRobot(wpi.TimedRobot):
         # Setting max output (currently at 25% power)
         self.robot_drive.setMaxOutput(0.25)
 
-        self.elevator_motor = self.createSparkMax(6,rev.CANSparkMax.IdleMode.kBrake)
-        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, 100)
-        self.elevator_motor.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, -100)
+        self.elevator_motor = self.createSparkMax(6,rev.SparkMax.IdleMode.kBrake)
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
 
