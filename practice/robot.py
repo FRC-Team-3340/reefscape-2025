@@ -21,7 +21,7 @@ class MyRobot(wpi.TimedRobot):
         return encoder
 
     def robotInit(self):
-        self.controller = wpi.Joystick(0)
+        self.controller = wpi.XboxController(0)
         motors = []
         for i in range(4):
             motors.append(self.createCIM(can_id=i, neutral_mode=nm.Coast))
@@ -39,9 +39,11 @@ class MyRobot(wpi.TimedRobot):
         # Setting max output (currently at 25% power)
         self.robot_drive.setMaxOutput(0.25)
 
-        self.elevator_motor = self.createSparkMax(6,rev.SparkMax.IdleMode.kBrake)
+        self.elevator_motor = self.createSparkMax(6, rev.SparkMax.IdleMode.kBrake)
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
+        self.new_motor = self.createSparkMax(4, rev.SparkMax.IdleMode.kBrake)
+        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 2) 
 
         self.elevator_encoder = self.createSparkMaxEncoder(self.elevator_motor)
 
@@ -51,19 +53,25 @@ class MyRobot(wpi.TimedRobot):
 
     # Assigning buttons on selected controller to
     def teleopPeriodic(self):
-        forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2)
+        '''forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2)
                    )/(.5+(abs(self.controller.getRawAxis(0)) > 0.1))
+        self.robotDrive.arcadeDrive(
+             -self.controller.getLeftY(), -self.controller.getRightX()
+        )
 
-        try:
-            self.robot_drive.arcadeDrive(
+         try:
+            self.robot_drive.arcadeDrive( 
                 xSpeed=forward, zRotation=self.controller.getRawAxis(0))
         except Exception:
-            raise Exception
+            raise Exception'''
+        
+        self.robot_drive.tankDrive(-self.controller.getLeftY(), -self.controller.getRightY())
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
 
-        
+        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
+        self.new_motor.set(arm_2)
 
     def autonomousInit(self):
         self.timer = wpi.Timer()
