@@ -22,10 +22,6 @@ class MyRobot(wpi.TimedRobot):
 
         wpi.cameraserver.CameraServer.launch()
         self.mySwitch = wpi.DigitalInput(0)
-
-    def robotPeriodic(self):
-        if self.mySwitch.get() == True:
-            print("hi :D")
         
     # def robotPeriodic(self):
 
@@ -43,7 +39,8 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
         
-        self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))
+        if self.driveSwitch.get() == False:
+            self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
