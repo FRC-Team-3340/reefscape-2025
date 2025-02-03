@@ -21,7 +21,12 @@ class MyRobot(wpi.TimedRobot):
         self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
 
         wpi.cameraserver.CameraServer.launch()
+        self.mySwitch = wpi.DigitalInput(0)
 
+    def robotPeriodic(self):
+        if self.mySwitch.get() == True:
+            print("hi :D")
+        
     # def robotPeriodic(self):
 
     # Assigning buttons on selected controller to
@@ -38,7 +43,7 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
         
-        self.drive.tankDrive(-self.controller.getRawAxis(1), -self.controller.getRawAxis(5))
+        self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
