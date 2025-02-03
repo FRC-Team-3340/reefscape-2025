@@ -1,12 +1,11 @@
 import wpilib as wpi
-from drive import Drive
-
+from components.drive import Drive
 
 import rev
 import phoenix5 as p5
 from phoenix5 import NeutralMode as nm
 
-import motors as m
+import components.motors as m
 
 class MyRobot(wpi.TimedRobot):
     def robotInit(self):
@@ -16,10 +15,10 @@ class MyRobot(wpi.TimedRobot):
         self.elevator_motor = m.createSparkMax(6, m.SparkMax.IdleMode.kBrake, m.SparkMax.MotorType.kBrushless)
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
-        self.new_motor = m.createSparkMax(4, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
+        self.new_motor = m.createSparkMax(5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
         self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 2) 
 
-        self.elevator_encoder = self.createSparkMaxEncoder(self.elevator_motor)
+        self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
 
         wpi.cameraserver.CameraServer.launch()
 
@@ -39,7 +38,7 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
         
-        self.drive.tankDrive(-self.controller.getLeftY(), -self.controller.getRightY())
+        self.drive.tankDrive(-self.controller.getRawAxis(1), -self.controller.getRawAxis(5))
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
@@ -56,20 +55,20 @@ class MyRobot(wpi.TimedRobot):
         match(self.stage):
             case 0:
                 if self.timer.get() < 5:
-                    self.robot_drive.arcadeDrive(xSpeed=.75, zRotation=0)
+                    self.drive.arcadeDrive(xSpeed=.75, zRotation=0)
                 else:
                     self.stage += 1
             case 1:
-                self.robot_drive.arcadeDrive(xSpeed=0, zRotation=0)
+                self.drive.arcadeDrive(xSpeed=0, zRotation=0)
                 if self.timer.get() > 10:
                     self.stage += 1
             case 2:
                 if self.timer.get() < 15:
-                    self.robot_drive.arcadeDrive(xSpeed=-.75, zRotation=0)
+                    self.drive.arcadeDrive(xSpeed=-.75, zRotation=0)
                 else:
                     self.stage += 1
             case 3:
-                self.robot_drive.arcadeDrive(xSpeed=.0, zRotation=0)
+                self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
                 self.timer.stop()
 
 
