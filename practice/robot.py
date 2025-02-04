@@ -38,21 +38,23 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
         
-
+        if self.controller.getRawButton(1):
+            self.new_motor.set(0.3)
+        else:
+            self.new_motor.set(0)
 
         self.mySwitch.getPressed()
         self.mySwitch.getReleased()
         
         if self.mySwitch.get() == False:
-            self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))
-        
+            self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))        
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
 
-        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
+        '''        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
         self.new_motor.set(arm_2)
-
+        '''
     def autonomousInit(self):
         self.timer = wpi.Timer()
         self.stage = 0
