@@ -15,7 +15,7 @@ class MyRobot(wpi.TimedRobot):
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
         self.new_motor = m.createSparkMax(5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
-        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 2) 
+        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 4) 
 
         self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
 
