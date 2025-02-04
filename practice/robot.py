@@ -6,6 +6,7 @@ import phoenix5 as p5
 from phoenix5 import NeutralMode as nm
 
 import components.motors as m
+from components.switch import LimitSwitch
 
 class MyRobot(wpi.TimedRobot):
     def robotInit(self):
@@ -21,7 +22,7 @@ class MyRobot(wpi.TimedRobot):
         self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
 
         wpi.cameraserver.CameraServer.launch()
-        self.mySwitch = wpi.DigitalInput(0)
+        self.mySwitch =  LimitSwitch(0)
         
     # def robotPeriodic(self):
 
@@ -39,7 +40,12 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
         
-        if self.driveSwitch.get() == False:
+
+
+        self.mySwitch.getPressed()
+        self.mySwitch.getReleased()
+        
+        if self.mySwitch.get() == False:
             self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
