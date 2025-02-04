@@ -1,10 +1,6 @@
 import wpilib as wpi
 from components.drive import Drive
 
-import rev
-import phoenix5 as p5
-from phoenix5 import NeutralMode as nm
-
 import components.motors as m
 from components.switch import LimitSwitch
 
@@ -47,6 +43,7 @@ class MyRobot(wpi.TimedRobot):
         
         if self.mySwitch.get() == False:
             self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))
+        
         
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
