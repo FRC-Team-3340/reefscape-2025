@@ -1,9 +1,9 @@
-import wpilib as wpi
-import wpilib.drive as drive
+from wpilib import MotorControllerGroup
+from wpilib.drive import DifferentialDrive
 
 import components.motors as m
 
-class Drive(drive.DifferentialDrive):
+class Drive(DifferentialDrive):
     def __init__(self):
         # Adjust maximum robot power (0-1, where 1 is full power)
         maxPower = 0.25
@@ -16,13 +16,13 @@ class Drive(drive.DifferentialDrive):
         drive_train_motors = []
 
         for id in range(4):
-            drive_train_motors.append(m.createTalonSRX(id, m.p5.NeutralMode.Coast))
+            drive_train_motors.append(m.createTalonSRX(id, m.NeutralMode.Coast))
         
 
-        left_train = wpi.MotorControllerGroup(drive_train_motors[0], drive_train_motors[1])
+        left_train = MotorControllerGroup(drive_train_motors[0], drive_train_motors[1])
         left_train.setInverted(INVERT_LEFT)
 
-        right_train = wpi.MotorControllerGroup(drive_train_motors[2], drive_train_motors[3])
+        right_train = MotorControllerGroup(drive_train_motors[2], drive_train_motors[3])
         left_train.setInverted(not(INVERT_LEFT))
         
         # Since this class inherits DifferentialDrive, we all super().__init__ to 

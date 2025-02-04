@@ -1,9 +1,7 @@
-import rev
-
 from phoenix5 import NeutralMode, WPI_TalonSRX
 from rev import SparkMax 
 
-def createSparkMax(can_id: int, neutral_mode: rev.SparkMax.IdleMode, motor_type: SparkMax.MotorType) -> SparkMax:
+def createSparkMax(can_id: int, neutral_mode: SparkMax.IdleMode, motor_type: SparkMax.MotorType) -> SparkMax:
     motor = SparkMax(can_id, motor_type)
     motor.IdleMode(neutral_mode)
 
