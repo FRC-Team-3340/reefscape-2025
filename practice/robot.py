@@ -1,7 +1,5 @@
 import wpilib as wpi
-from components.drive import Drive
-
-import time
+from subsystems.drive import Drive
 
 import components.motors as m
 from components.switch import LimitSwitch
