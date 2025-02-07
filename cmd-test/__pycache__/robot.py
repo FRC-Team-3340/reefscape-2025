@@ -45,7 +45,7 @@ class MyRobot(wpi.TimedRobot):
             self.new_motor.set(0)
 
         if self.mySwitch.get() == False:
-            self.drive.tankDrive(self.controller.getRawAxis(1),
+            self.drive.tankDrive(-self.controller.getRawAxis(1),
                                  self.controller.getRawAxis(5))
 
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
