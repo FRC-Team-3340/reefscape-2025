@@ -12,15 +12,10 @@ class MyRobot(wpi.TimedRobot):
         self.climber = Climber()
         self.controller = wpi.XboxController(0)
 
-        self.elevator_motor = m.createSparkMax(
-            6, m.SparkMax.IdleMode.kBrake, m.SparkMax.MotorType.kBrushless)
-        self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
-
         self.new_motor = m.createSparkMax(
             5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
         self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 4)
 
-        self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
 
         wpi.cameraserver.CameraServer.launch()
         self.mySwitch = LimitSwitch(0)
@@ -49,9 +44,6 @@ class MyRobot(wpi.TimedRobot):
         if self.mySwitch.get() == False:
             self.drive.tankDrive(-self.controller.getRawAxis(1),
                                  self.controller.getRawAxis(5))
-
-        arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
-        self.elevator_motor.set(arm)
 
         self.climber.climb(self.controller.getPOV())
 
