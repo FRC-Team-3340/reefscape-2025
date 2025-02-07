@@ -6,22 +6,25 @@ import time
 import components.motors as m
 from components.switch import LimitSwitch
 
+
 class MyRobot(wpi.TimedRobot):
     def robotInit(self):
         self.drive = Drive()
         self.controller = wpi.XboxController(0)
 
-        self.elevator_motor = m.createSparkMax(6, m.SparkMax.IdleMode.kBrake, m.SparkMax.MotorType.kBrushless)
+        self.elevator_motor = m.createSparkMax(
+            6, m.SparkMax.IdleMode.kBrake, m.SparkMax.MotorType.kBrushless)
         self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
 
-        self.new_motor = m.createSparkMax(5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
-        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 4) 
+        self.new_motor = m.createSparkMax(
+            5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
+        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 4)
 
         self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
 
         wpi.cameraserver.CameraServer.launch()
-        self.mySwitch =  LimitSwitch(0)
-        
+        self.mySwitch = LimitSwitch(0)
+
     # def robotPeriodic(self):
 
     # Assigning buttons on selected controller to
@@ -37,24 +40,24 @@ class MyRobot(wpi.TimedRobot):
                 xSpeed=forward, zRotation=self.controller.getRawAxis(0))
         except Exception:
             raise Exception'''
-        
+
         if self.controller.getRawButton(1):
             self.new_motor.set(0.3)
         else:
             self.new_motor.set(0)
 
-        self.mySwitch.getPressed()
-        self.mySwitch.getReleased()
-        
         if self.mySwitch.get() == False:
-            self.drive.tankDrive(-self.controller.getRawAxis(1), self.controller.getRawAxis(5))        
-        
+            self.drive.tankDrive(-self.controller.getRawAxis(1),
+                                 self.controller.getRawAxis(5))
+
         arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
         self.elevator_motor.set(arm)
 
-        '''        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
+        '''        
+        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
         self.new_motor.set(arm_2)
         '''
+
     def autonomousInit(self):
         self.timer = wpi.Timer()
         self.stage = 0
@@ -79,5 +82,3 @@ class MyRobot(wpi.TimedRobot):
             case 3:
                 self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
                 self.timer.stop()
-
-
