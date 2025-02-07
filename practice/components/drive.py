@@ -1,6 +1,5 @@
 from wpilib import MotorControllerGroup
 from wpilib.drive import DifferentialDrive
-from commands2 import Subsystem
 from typing import List
 
 import components.motors as m
