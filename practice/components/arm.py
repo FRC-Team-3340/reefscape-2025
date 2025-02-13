@@ -24,3 +24,12 @@ class Arm:
 
         # TODO: Restrict maximum power of motors. Try 1/4.
         # TODO:
+
+    def retractArm(self):
+        pass
+
+    def extendArm(self):
+        pass
+
+    def manualArmControl(self, direction: float):
+        pass

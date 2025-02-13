@@ -4,7 +4,7 @@ from commands2 import Subsystem
 from typing import List
 import commands2
 
-import components.motors as m
+import motors as m
 
 class Drive(DifferentialDrive):
     def __init__(self):
