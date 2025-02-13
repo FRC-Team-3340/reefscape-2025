@@ -1,6 +1,7 @@
 import wpilib as wpi
 from components.drive import Drive
 from components.climber import Climber
+from components.arm import Arm
 
 import components.motors as m
 from components.switch import LimitSwitch
@@ -10,7 +11,8 @@ class MyRobot(wpi.TimedRobot):
     def robotInit(self):
         self.drive = Drive()
         self.climber = Climber()
-        self.controller = wpi.XboxController(0)
+        self.arm = Arm()
+        self.controller = wpi.Joystick(0)
 
         self.new_motor = m.createSparkMax(
             5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
@@ -46,7 +48,7 @@ class MyRobot(wpi.TimedRobot):
                                  self.controller.getRawAxis(5))
 
         self.climber.climb(self.controller.getPOV())
-
+        self.arm.manualArmControl((self.controller.getPOV() == 90 + self.controller.getPOV() == 270))
         '''        
         arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
         self.new_motor.set(arm_2)
