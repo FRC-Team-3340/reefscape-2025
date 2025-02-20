@@ -27,3 +27,18 @@ class Climber(SparkMax):
         return self.__isActive__
     
 
+
+    '''
+    Create algorithm:
+    Over time, make power less, but using the   
+
+    counteract 
+
+    if power cut to climber after climbing, motor turns in reverse
+    
+    70lbs to kg*9.8m/s =
+    if encoder value = -, we need to turn the motor forward (+) 
+    calibrate every second 
+
+
+    '''

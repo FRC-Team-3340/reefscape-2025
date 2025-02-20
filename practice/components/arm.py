@@ -65,7 +65,6 @@ class Arm:
         else:
             self.arm_motor.set(0)
 
-        
 
     def checkArmPosition(self):
         '''Checks position of arm. Basically a software limit check.'''
@@ -80,6 +79,10 @@ class Arm:
             self.__isExtended__ = False
 
         # Check if arm is retracted (set to dispense coral or algae)
+        if (self.arm_limit.getPressed() and not(self.__calibrated__)):
+            self.arm_encoder.setPosition(0)        
+
+
         if armAngle <= 0:
             self.__isRetracted__ = True
 
