@@ -18,4 +18,5 @@ def createTalonSRX(can_id: int, neutral_mode: NeutralMode) -> WPI_TalonSRX:
     
 def createSparkMaxEncoder(controller: SparkMax):
     return controller.getEncoder()
+
                     
