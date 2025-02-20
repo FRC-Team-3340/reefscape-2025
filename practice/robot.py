@@ -46,7 +46,6 @@ class MyRobot(wpi.TimedRobot):
                                  self.controller.getRawAxis(5))
 
         self.climber.climb(self.controller.getPOV())
-
         '''        
         arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
         self.new_motor.set(arm_2)
