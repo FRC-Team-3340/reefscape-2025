@@ -13,13 +13,12 @@ class Arm:
         # create motor for the intake and "arm" mechanism
         self.roller_motor = m.createTalonSRX(
             5, neutral_mode=m.NeutralMode.Coast)
-
+        
+        self.arm_motor = m.createSparkMax(id=6, motor_type=m.SparkMax.IdleMode.kBrake)
 
         # made the code but the motor isnt working properly, I will check over in the REV app and then re-make the code
         # I feel like we're registering the motors incorrectly+        
-        self.arm_motor = self.new_motor
         self.arm_encoder = m.createSparkMaxEncoder(self.arm_motor)
-        self.arm_motor.setIdleMode(m.SparkMaxLowLevel.IdleMode.kBrake)
 
         # remember that encoder tracks rotations. gear box ratio is 64:1.
         # meaning: it takes 64 rotations of the motor for the gears to complete one rotation

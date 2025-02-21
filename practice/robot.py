@@ -14,11 +14,6 @@ class MyRobot(wpi.TimedRobot):
         self.arm = Arm()
         self.controller = wpi.Joystick(0)
 
-        self.new_motor = m.createSparkMax(
-            5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
-        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 4)
-
-
         wpi.cameraserver.CameraServer.launch()
         self.mySwitch = LimitSwitch(0)
 
@@ -38,23 +33,14 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
 
-        if self.controller.getRawButton(1):
-            self.new_motor.set(0.3)
-        else:
-            self.new_motor.set(0)
-
         if self.mySwitch.get() == False:
-            self.drive.tankDrive(self.controller.getRawAxis(1),
-                                 self.controller.getRawAxis(5))
+            # self.drive.tankDrive(self.controller.getRawAxis(1),
+                                #  self.controller.getRawAxis(5))
+            self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
 
         self.climber.climb(self.controller.getPOV())
         self.arm.manualArmControl((self.controller.getPOV() == 90 + self.controller.getPOV() == 270))
-        '''        
-        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
-        self.new_motor.set(arm_2)
-        '''
 
-        
 
     def autonomousInit(self):
         self.timer = wpi.Timer()
