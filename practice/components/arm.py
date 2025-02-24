@@ -14,7 +14,7 @@ class Arm:
         self.roller_motor = m.createTalonSRX(
             5, neutral_mode=m.NeutralMode.Coast)
         
-        self.arm_motor = m.createSparkMax(id=6, motor_type=m.SparkMax.IdleMode.kBrake)
+        self.arm_motor = m.createSparkMax(can_id=5, motor_type=m.SparkMax.MotorType.kBrushless, neutral_mode=m.SparkMax.IdleMode.kBrake)
 
         # made the code but the motor isnt working properly, I will check over in the REV app and then re-make the code
         # I feel like we're registering the motors incorrectly+        
