@@ -6,15 +6,14 @@ import components.motors as m
 
 
 class Drive(DifferentialDrive):
+    MAX_POWER = 0.25           # Adjust maximum robot power (0-1, where 1 is full power)
+
+    # The way the motors are inverted may affect robot direction.
+    # By default, the left train is inverted. At least ONE drive train must be inverted.
+    INVERT_LEFT = True
+    INVERT_RIGHT = False
+
     def __init__(self):
-        # Adjust maximum robot power (0-1, where 1 is full power)
-        MAX_POWER = 0.25
-
-        # The way the motors are inverted may affect robot direction.
-        # By default, the left train is inverted. At least ONE drive train must be inverted.
-        INVERT_LEFT = True
-        INVERT_RIGHT = False
-
         drive_train_motors: List[m.WPI_TalonSRX] = []
 
         # Motors are created like this: Left[0, 1] Right[2,3]
@@ -29,15 +28,15 @@ class Drive(DifferentialDrive):
 
         left_train = MotorControllerGroup(
             drive_train_motors[0], drive_train_motors[1])
-        left_train.setInverted(INVERT_LEFT)
+        left_train.setInverted(Drive.INVERT_LEFT)
 
         right_train = MotorControllerGroup(
             drive_train_motors[2], drive_train_motors[3])
-        right_train.setInverted(INVERT_RIGHT)
+        right_train.setInverted(Drive.INVERT_RIGHT)
 
         # Since this class inherits DifferentialDrive, we all super().__init__ to
         # initialize parent class and create a reference for the robot.
         super().__init__(leftMotor=left_train, rightMotor=right_train)
 
 
-        self.setMaxOutput(maxOutput=MAX_POWER)
+        self.setMaxOutput(maxOutput=Drive.MAX_POWER)

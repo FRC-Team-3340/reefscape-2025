@@ -34,11 +34,11 @@ class MyRobot(wpi.TimedRobot):
             raise Exception'''
 
         if self.mySwitch.get() == False:
-            # self.drive.tankDrive(self.controller.getRawAxis(1),
-                                #  self.controller.getRawAxis(5))
-            self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
+            self.drive.tankDrive(self.controller.getRawAxis(1),
+                                 self.controller.getRawAxis(5))
+            # self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
 
-        self.climber.climb(self.controller.getPOV())
+        self.climber.getActive()
         self.arm.manualArmControl((self.controller.getPOV() == 90 + self.controller.getPOV() == 270))
 
 

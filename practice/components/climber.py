@@ -1,16 +1,17 @@
-from rev import SparkMax, SparkBaseConfig
+import components.motors as m
 
-class Climber(SparkMax):
+class Climber():
     def __init__(self):
         self.__power__ = 0.1
 
         assert self.__power__ <= 1
-        super().__init__(6, SparkMax.MotorType.kBrushless)
-        self.IdleMode(SparkMax.IdleMode.kBrake)
+
+        self.climber_motor = m.createSparkMax(6, m.SparkMax.IdleMode.kBrake, m.SparkMax.MotorType.kBrushless)
+        self.climber_motor.IdleMode(m.SparkMax.IdleMode.kBrake)
 
         self.__isActive__ = False
         
-    def climb(self, dpad: int):
+    def climb(self, dpad):
         # USING THE DPAD
         if (dpad == 0):
             direction = 1
@@ -19,9 +20,9 @@ class Climber(SparkMax):
         else:
             direction = 0
 
-        self.__isActive__ == True if dpad != -1 else False
+        self.__isActive__ = True if abs(self.climber_motor.getBusVoltage()) > 0 else False
         
-        self.set(direction * self.__power__)
+        self.climber_motor.set(direction * self.__power__)
 
     def getActive(self) -> bool:
         return self.__isActive__
