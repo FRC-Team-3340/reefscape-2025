@@ -11,7 +11,7 @@ class MyRobot(wpi.TimedRobot):
     def robotInit(self):
         self.drive = Drive()
         self.climber = Climber()
-        self.arm = Arm()
+        # self.arm = Arm()
         self.controller = wpi.Joystick(0)
 
         wpi.cameraserver.CameraServer.launch()
@@ -39,7 +39,7 @@ class MyRobot(wpi.TimedRobot):
             # self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
 
         self.climber.getActive()
-        self.arm.manualArmControl((self.controller.getPOV() == 90 + self.controller.getPOV() == 270))
+        # self.arm.manualArmControl((self.controller.getPOV() == 90 + self.controller.getPOV() == 270))
 
 
     def autonomousInit(self):

@@ -14,8 +14,11 @@ class Arm:
         self.roller_motor = m.createTalonSRX(
             5, neutral_mode=m.NeutralMode.Coast)
     
-        self.arm_motor = m.createSparkMax(can_id=5, motor_type=m.SparkMax.MotorType.kBrushless, neutral_mode=m.SparkMax.IdleMode.kBrake)
-
+        self.arm_motor = m.createSparkMax(
+            can_id= 5,
+            neutral_mode=m.SparkMax.IdleMode.kBrake,
+            motor_type= m.SparkLowLevel.MotorType.kBrushless
+        )
         # remember that encoder tracks rotations. gear box ratio is 64:1.
         # meaning: it takes 64 rotations of the motor for the gears to complete one rotation
         # 0.125 or 1/8th gear box rotation = 45 degrees (theoretically)
