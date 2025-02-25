@@ -2,13 +2,12 @@ import components.motors as m
 
 class Climber:
     def __init__(self):
-        self.__power__ = 0.1
+        self.__power__ = 0.5
 
         assert self.__power__ <= 1
 
         self.climber_motor = m.createSparkMax(
             can_id= 6,
-            neutral_mode=m.SparkMax.IdleMode.kBrake,
             motor_type= m.SparkLowLevel.MotorType.kBrushless
         )
 

@@ -18,6 +18,6 @@ class LimitSwitch(wpi.DigitalInput):
             return True
         else:
             return False
-        
+    
     
         

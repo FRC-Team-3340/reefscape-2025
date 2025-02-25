@@ -14,24 +14,25 @@ class Drive(DifferentialDrive):
     INVERT_RIGHT = False
 
     def __init__(self):
-        drive_train_motors: List[m.WPI_TalonSRX] = []
+        front_left = m.createTalonSRX(0, neutral_mode=m.NeutralMode.Coast)
+        back_left = m.createVictorSPX(1, neutral_mode=m.NeutralMode.Coast)
+        front_right = m.createVictorSPX(2, neutral_mode=m.NeutralMode.Coast)
+        back_right =m.createVictorSPX(3, neutral_mode=m.NeutralMode.Coast)
 
         # Motors are created like this: Left[0, 1] Right[2,3]
         # Use Phoenix Tuner to change CAN IDs if needed.
-        for id in range(4):
-            drive_train_motors.append(
-                m.createTalonSRX(id, m.NeutralMode.Coast))
 
         # wpilib.MotorControllerGroup is deprecated as of 2024.
         # See if you could use the follow command to replace MotorControllerGroup?
         # drive_train_motors[0].follow(drive_train_motors[1])
 
+
         left_train = MotorControllerGroup(
-            drive_train_motors[0], drive_train_motors[1])
+            front_left, back_left)
         left_train.setInverted(Drive.INVERT_LEFT)
 
         right_train = MotorControllerGroup(
-            drive_train_motors[2], drive_train_motors[3])
+            front_right, back_right)
         right_train.setInverted(Drive.INVERT_RIGHT)
 
         # Since this class inherits DifferentialDrive, we all super().__init__ to

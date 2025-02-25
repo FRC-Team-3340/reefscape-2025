@@ -4,21 +4,25 @@ from components.climber import Climber
 from components.arm import Arm
 
 import components.motors as m
-from components.switch import LimitSwitch
-
 
 class MyRobot(wpi.TimedRobot):
     def robotInit(self):
         self.drive = Drive()
         self.climber = Climber()
-        # self.arm = Arm()
+        self.arm = Arm()
         self.controller = wpi.Joystick(0)
 
         wpi.cameraserver.CameraServer.launch()
-        self.mySwitch = LimitSwitch(0)
+        # self.mySwitch = LimitSwitch(0)
 
     # def robotPeriodic(self):
 
+    def disabledPeriodic(self):
+        self.arm.resetAndCalibrate()
+
+    def testPeriodic(self):
+        self.arm.resetAndCalibrate()
+    
     # Assigning buttons on selected controller to
     def teleopPeriodic(self):
         '''forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2)
@@ -33,14 +37,16 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
 
-        if self.mySwitch.get() == False:
-            self.drive.tankDrive(self.controller.getRawAxis(1),
+        # if self.mySwitch.get() == False:
+        self.drive.tankDrive(self.controller.getRawAxis(1),
                                  self.controller.getRawAxis(5))
             # self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
 
-        self.climber.getActive()
-        # self.arm.manualArmControl((self.controller.getPOV() == 90 + self.controller.getPOV() == 270))
-
+        self.climber.climb(self.controller.getPOV())
+        self.arm.manualArmControl(self.controller.getPOV())
+        
+        roller_direction = -self.controller.getRawAxis(3) + self.controller.getRawAxis(4)
+        self.arm.activateRollers(roller_direction)
 
     def autonomousInit(self):
         self.timer = wpi.Timer()
