@@ -6,6 +6,7 @@ class LimitSwitch(wpi.DigitalInput):
         self.__isTriggered__ = False
 
     def getPressed(self) -> bool:
+        print('Pressed: ', self.get())
         if (self.get() == True and not(self.__isTriggered__)):
             self.__isTriggered__ = True
             return True
@@ -13,6 +14,7 @@ class LimitSwitch(wpi.DigitalInput):
             return False
         
     def getReleased(self) -> bool:
+        print('Released: ', self.get())
         if (self.get() == False and self.__isTriggered__):
             self.__isTriggered__ = False
             return True
