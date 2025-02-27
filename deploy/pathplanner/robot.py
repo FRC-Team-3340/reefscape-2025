@@ -1,30 +1,29 @@
 import wpilib as wpi
-from subsystems.drive import Drive
+from components.drive import Drive
+from components.climber import Climber
+from components.arm import Arm
 
 import components.motors as m
-from components.switch import LimitSwitch
-
 
 class MyRobot(wpi.TimedRobot):
     def robotInit(self):
         self.drive = Drive()
-        self.controller = wpi.XboxController(0)
-
-        self.elevator_motor = m.createSparkMax(
-            6, m.SparkMax.IdleMode.kBrake, m.SparkMax.MotorType.kBrushless)
-        self.elevator_motor.setVoltage(self.elevator_motor.getBusVoltage() / 2)
-
-        self.new_motor = m.createSparkMax(
-            5, m.SparkMax.IdleMode.kBrake,  m.SparkMax.MotorType.kBrushless)
-        self.new_motor.setVoltage(self.new_motor.getBusVoltage() / 4)
-
-        self.elevator_encoder = m.createSparkMaxEncoder(self.elevator_motor)
+        self.climber = Climber()
+        self.arm = Arm()
+        self.controller = wpi.Joystick(0)
 
         wpi.cameraserver.CameraServer.launch()
-        self.mySwitch = LimitSwitch(0)
+
+        
 
     # def robotPeriodic(self):
 
+    def disabledPeriodic(self):
+        self.arm.resetAndCalibrate()
+
+    def testPeriodic(self):
+        self.arm.resetAndCalibrate()
+    
     # Assigning buttons on selected controller to
     def teleopPeriodic(self):
         '''forward = (-self.controller.getRawButton(1) + self.controller.getRawButton(2)
@@ -39,22 +38,16 @@ class MyRobot(wpi.TimedRobot):
         except Exception:
             raise Exception'''
 
-        if self.controller.getRawButton(1):
-            self.new_motor.set(0.3)
-        else:
-            self.new_motor.set(0)
-
-        if self.mySwitch.get() == False:
-            self.drive.tankDrive(-self.controller.getRawAxis(1),
+        # if self.mySwitch.get() == False:
+        self.drive.tankDrive(self.controller.getRawAxis(1),
                                  self.controller.getRawAxis(5))
+            # self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
 
-        arm = (self.controller.getPOV() == 0 + self.controller.getPOV() == 180)
-        self.elevator_motor.set(arm)
-
-        '''        
-        arm_2 = (self.controller.getPOV() == 90 + self.controller.getPOV() == 270)
-        self.new_motor.set(arm_2)
-        '''
+        self.climber.climb(self.controller.getPOV())
+        self.arm.manualArmControl(self.controller.getPOV())
+        
+        roller_direction = -self.controller.getRawAxis(3) + self.controller.getRawAxis(4)
+        self.arm.activateRollers(roller_direction)
 
     def autonomousInit(self):
         self.timer = wpi.Timer()
