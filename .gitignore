@@ -4,8 +4,8 @@ wpilib-2025
 wpilib-2024
 venv
 .venv
-**/__pycache__/
-**/.pytest_cache/    
-**/tests
-
+practice/__pycache__
+practice/components/__pycache__
+practice/tests/__pycache
 Untitled-1.py
+test.py
