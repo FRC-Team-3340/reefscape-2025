@@ -1,5 +1,6 @@
 import components.motors as m
 from components.switch import LimitSwitch
+from typing import Literal
 
 # Arm does not inherit from another class unlike switch or drive.
 # Arm consists of more than just one motor.
@@ -7,8 +8,10 @@ from components.switch import LimitSwitch
 
 class Arm:
     GEAR_BOX_RATIO_ARM = 64
-    ARM_MOTOR_POWER = .15
+    ARM_MOTOR_POWER_MANUAL = 0.15
+    ARM_MOTOR_POWER_AUTO = 0.25
     ROLLER_POWER = 0.25
+    RETRACTION_LIMIT = "switch"
 
     def __init__(self):
         # create MotorController reference reference for the intake mechanism
@@ -40,6 +43,60 @@ class Arm:
 
         self.arm_encoder.setPosition(0)
 
+    def retractArm(self):  
+        '''retracts arm''' 
+        deltaAngle = 45
+        self.__switchingArmState__ = True
+        self.__setExtended__ = False
+
+        # For retract arm: we get the encoder value as given (negative when extended)
+        # We want to make it so that the motor turns until it reaches its limit
+        currentRotations = self.getArmRotations(enableCutOff=True, cutoff="positive")
+        
+        targetChange = 45
+
+        # two implementations are provided: physical limit (switch) or soft limit (encoder)
+        # switch recommended!
+        if (currentRotations + deltaAngle < targetChange):
+            speed = ((currentRotations) / targetChange) * Arm.ARM_MOTOR_POWER_AUTO if currentRotations > targetChange/3 else Arm.ARM_MOTOR_POWER_MANUAL
+
+            if Arm.RETRACTION_LIMIT == "switch":
+                if self.arm_limit.getPressed():
+                    self.calibrate()
+                    self.__switchingArmState__ = False
+                else:
+                    self.arm_motor.set(speed=speed)
+
+            elif Arm.RETRACTION_LIMIT == "encoder":               
+                if currentRotations <= 0:
+                    self.calibrate()
+                else:
+                    self.arm_motor.set(speed=speed)
+
+    def extendArm(self):
+        '''extends arm''' 
+        self.__switchingArmState__ = True
+        self.__setExtended__ = True
+
+        # For extend arm: we negate the encoder value as its negative when extended.
+        # We want to make it so that the motor turns until it reaches its limit
+        currentRotations = -self.getArmRotations(enableCutOff=True, cutoff="negative")
+        
+        targetChange = 45
+
+        # two implementations are provided: physical limit (switch) or soft limit (encoder)
+        # switch recommended!
+        if (currentRotations < targetChange):
+            speed = (1-((currentRotations) / targetChange)) * Arm.ARM_MOTOR_POWER_AUTO if currentRotations > (2/3 * targetChange) else Arm.ARM_MOTOR_POWER_MANUAL
+    
+        if currentRotations > targetChange:
+            self.arm_motor.set(0)
+            self.__switchingArmState__ = False
+        else:
+            self.arm_motor.set(speed=speed)
+
+                
+
     def toggleArm(self, toggle):
         # TODO: This code I wrote but not tested. Please fix if necessary. Rely on state variables.
         
@@ -48,17 +105,11 @@ class Arm:
             self.__setExtended__ = not(self.__setExtended__)   
             self.__switchingArmState__ = True
 
-        if self.__setExtended__:
-            # When the robot arm is extended, encoder rotations are negative.
-            # To make calculations easier, I negate the position so that movement outward is positive.
-            # ignore all values less than 0 for encoder. encoder rotations should floor to 0.
-            currentRotations = -self.getArmRotations() if self.getArmRotations() >= 0 else 0
-            target = 45
-
-            if not(self.__isExtended__): 
-                if currentRotations < 45:
-                    speed = (1 - (currentRotations/target)) * Arm.ARM_MOTOR_POWER
-                
+        if(self.__switchingArmState__):
+            if self.__setExtended__:
+                self.extendArm()
+            elif not(self.__setExtended__):
+                self.retractArm()                
                 
 
         '''       
@@ -69,14 +120,7 @@ class Arm:
         Set the target position for the arm motor to rotate 45 degrees
         self.arm_motor.getPIDController().setReference(target_position, m.SparkMax.ControlType.kPosition)        
         '''
-
-
-    def retractArm(self):
-        pass
-
-    def extendArm(self):
-        pass
-
+        
     def manualArmControl(self, dpad: float):
         self.checkArmPosition()
 
@@ -88,9 +132,9 @@ class Arm:
             direction = 0
 
         if (not(self.__isExtended__) and direction < 0):
-            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER)
+            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
         elif(not(self.__isRetracted__) and direction > 0):
-            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER)
+            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
         else:
             self.arm_motor.set(0)
 
@@ -149,11 +193,26 @@ class Arm:
         # Limit switch mounted on robot neutral point. 
         # Robot is considered "calibrated" and retracted once triggered, and motor is set to standby
         if self.arm_limit.getPressed():
-            self.__isRetracted__ = True
-            self.__calibrated__ = True
-            self.arm_motor.set(0)
-            self.arm_encoder.setPosition(0)
+            self.calibrate()
+
+    def calibrate(self):
+        self.__isRetracted__ = True
+        self.__calibrated__ = True
+        self.arm_motor.set(0)
+        self.arm_encoder.setPosition(0)
+
     
-    def getArmRotations(self) -> float:
+    def getArmRotations(self, enableCutOff: bool = False, cutoff: str = Literal["negative", "positive"]) -> float:
         '''returns arm rotations relative to arm itself, not the motor.'''
-        return (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 360
+
+        # note that encoder is in the negatives when it is extended.
+        position = (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 360
+
+        if enableCutOff:
+            match(cutoff):
+                case ("negative") :
+                    position = 0 if (position < 0) else position
+                case ("positive"):
+                    position = 0 if (position > 0) else position
+
+        return position

@@ -1,28 +1,21 @@
 
 import wpilib
 import wpilib.drive
-from pathplannerlib.auto import AutoBuilder
+from commands2 import Subsystem, Command
+import commands2
+from pathplannerlib.auto import AutoBuilder, PathPlannerAuto, NamedCommands
 from pathplannerlib.controller import PPLTVController
 from pathplannerlib.config import RobotConfig
 from wpilib import DriverStation
+import components.motors as m
+import components.drive as Drive
 
 class DriveSubsystem(Subsystem):
 
-     def __init__(self):
-        self.front_left = m.createTalonSRX(0, neutral_mode=m.NeutralMode.Coast)
-        self.back_left = m.createVictorSPX(1, neutral_mode=m.NeutralMode.Coast)
-        self.front_right = m.createVictorSPX(2, neutral_mode=m.NeutralMode.Coast)
-        self.back_right =m.createVictorSPX(3, neutral_mode=m.NeutralMode.Coast).
+    def __init__(self):
+        self.drive = Drive()
 
-        
-        # Group the left and right motors
-        self.left_motors = wpilib.MotorControllerGroup(self.left_front_motor, self.left_rear_motor)
-        self.right_motors = wpilib.MotorControllerGroup(self.right_front_motor, self.right_rear_motor)
-
-        # Create a differential drive object
-        self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
-
-    def arcade_drive(self, forward_speed, rotation_speed):
+    def arcadeDrive(self, forward_speed, rotation_speed) -> Command:
         self.drive.arcadeDrive(forward_speed, rotation_speed, False)
 
     def stop(self):
