@@ -6,5 +6,6 @@ venv
 .venv
 __pycache__
 .pytest_cache    
+tests
 
 Untitled-1.py
