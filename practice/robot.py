@@ -17,9 +17,6 @@ class MyRobot(wpi.TimedRobot):
 
     # def robotPeriodic(self):
 
-    def disabledPeriodic(self):
-        self.arm.resetAndCalibrate()
-
     def testPeriodic(self):
         self.arm.resetAndCalibrate()
     

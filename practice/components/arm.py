@@ -7,7 +7,7 @@ from components.switch import LimitSwitch
 
 class Arm:
     GEAR_BOX_RATIO_ARM = 64
-    ARM_MOTOR_POWER = .25
+    ARM_MOTOR_POWER = .15
     ROLLER_POWER = 0.25
 
     def __init__(self):
@@ -27,8 +27,6 @@ class Arm:
 
         self.arm_limit = LimitSwitch(0)
 
-        self.__hit_lower_limit__ = False
-        self.__hit_upper_limit__ = False
         self.__calibrated__ = False
         self.__isExtended__ = False
         self.__isRetracted__ = False
@@ -60,9 +58,9 @@ class Arm:
         else:
             direction = 0
 
-        if (not(self.__isExtended__) and direction > 0):
+        if (not(self.__isExtended__) and direction < 0):
             self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER)
-        elif(not(self.__isRetracted__) and direction < 0):
+        elif(not(self.__isRetracted__) and direction > 0):
             self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER)
         else:
             self.arm_motor.set(0)
@@ -71,35 +69,36 @@ class Arm:
         '''Checks position of arm. Basically a software limit check.'''
 
         # Calculate encoder counts relative to arm, and convert to degrees
-        armAngle = (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 64 * 360
-        print(self.arm_encoder.getPosition())
-        # # Check if arm is extended (set to pick up algae)
-        # if armAngle >= 45 * 64:
-        #     self.__isExtended__ = True
-        #     print("CANT GO ANY MORE CAPTAIN")
-        # else:
-        #     self.__isExtended__ = False
+        armAngle = (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 360
+        print(self.arm_encoder.getPosition()/Arm.GEAR_BOX_RATIO_ARM * 360)
 
-        # # Check if arm is retracted (set to dispense coral or algae)
-        # if (self.arm_limit.getPressed() and not(self.__calibrated__)):
-        #     self.arm_encoder.setPosition(0)        
-        #     print("Retracted!")
-        #     self.__calibrated__ = True
-        #     self.__isRetracted__ = True
+        # Check if arm is extended (set to pick up algae)
+        if armAngle <= -45:
+            self.__isExtended__ = True
+            print("CANT GO ANY MORE CAPTAIN")
+        else:
+            self.__isExtended__ = False
+
+        # Check if arm is retracted (set to dispense coral or algae)
+        if (self.arm_limit.get() and not(self.__calibrated__)):
+            self.arm_encoder.setPosition(0)        
+            print("Retracted!")
+            self.__calibrated__ = True
+            self.__isRetracted__ = True
 
 
-        # if armAngle <= -5:
-        #     self.__isRetracted__ = True
+        if armAngle >= 5:
+            self.__isRetracted__ = True
 
-        #     # Motor will recalibrate itself automatically once it is back on neutral position
-        #     if not(self.__calibrated__):
-        #         self.arm_encoder.setPosition(0)
-        #         self.__calibrated__ = True
+            # Motor will recalibrate itself automatically once it is back on neutral position
+            if not(self.__calibrated__):
+                self.arm_encoder.setPosition(0)
+                self.__calibrated__ = True
 
-        # elif int(armAngle) !=0:
-        #     # The motor is not considered calibrated once away from neutral retracted position
-        #     self.__isRetracted__ = False
-        #     self.__calibrated__ = False
+        elif int(armAngle) !=0:
+            # The motor is not considered calibrated once away from neutral retracted position
+            self.__isRetracted__ = False
+            self.__calibrated__ = False
 
     def activateRollers(self, direction: float):
         self.roller_motor.set(direction * Arm.ROLLER_POWER)
