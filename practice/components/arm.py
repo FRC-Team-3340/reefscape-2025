@@ -6,10 +6,9 @@ from components.switch import LimitSwitch
 
 
 class Arm:
-    # Class variables. Please adjust if necessary.
-    GEAR_BOX_RATIO_ARM = 64     # Gear box ratio. It takes this many rotations of the motor for one rotaiton of the gearbox.
-    ARM_MOTOR_POWER = .25       # Limit power output of robot. Expressed as a decimal from 0 to 1
-    ROLLER_POWER = 0.25         # Limit power output of rollers on arm. Expressed as decimal from 0 to 1
+    GEAR_BOX_RATIO_ARM = 64
+    ARM_MOTOR_POWER = .15
+    ROLLER_POWER = 0.25
 
     def __init__(self):
         # create MotorController reference reference for the intake mechanism
@@ -88,9 +87,9 @@ class Arm:
         else:
             direction = 0
 
-        if (not(self.__isExtended__) and direction > 0):
+        if (not(self.__isExtended__) and direction < 0):
             self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER)
-        elif(not(self.__isRetracted__) and direction < 0):
+        elif(not(self.__isRetracted__) and direction > 0):
             self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER)
         else:
             self.arm_motor.set(0)
@@ -108,26 +107,33 @@ class Arm:
         # else:
         #     self.__isExtended__ = False
 
-        # # Check if arm is retracted (set to dispense coral or algae)
-        # if (self.arm_limit.getPressed() and not(self.__calibrated__)):
-        #     self.arm_encoder.setPosition(0)        
-        #     print("Retracted!")
-        #     self.__calibrated__ = True
-        #     self.__isRetracted__ = True
+        # Check if arm is extended (set to pick up algae)
+        if armAngle <= -45:
+            self.__isExtended__ = True
+            print("CANT GO ANY MORE CAPTAIN")
+        else:
+            self.__isExtended__ = False
+
+        # Check if arm is retracted (set to dispense coral or algae)
+        if (self.arm_limit.get() and not(self.__calibrated__)):
+            self.arm_encoder.setPosition(0)        
+            print("Retracted!")
+            self.__calibrated__ = True
+            self.__isRetracted__ = True
 
 
-        # if armAngle <= -5:
-        #     self.__isRetracted__ = True
+        if armAngle >= 5:
+            self.__isRetracted__ = True
 
-        #     # Motor will recalibrate itself automatically once it is back on neutral position
-        #     if not(self.__calibrated__):
-        #         self.arm_encoder.setPosition(0)
-        #         self.__calibrated__ = True
+            # Motor will recalibrate itself automatically once it is back on neutral position
+            if not(self.__calibrated__):
+                self.arm_encoder.setPosition(0)
+                self.__calibrated__ = True
 
-        # elif int(armAngle) !=0:
-        #     # The motor is not considered calibrated once away from neutral retracted position
-        #     self.__isRetracted__ = False
-        #     self.__calibrated__ = False
+        elif int(armAngle) !=0:
+            # The motor is not considered calibrated once away from neutral retracted position
+            self.__isRetracted__ = False
+            self.__calibrated__ = False
 
     def activateRollers(self, direction: float):
         self.roller_motor.set(direction * Arm.ROLLER_POWER)

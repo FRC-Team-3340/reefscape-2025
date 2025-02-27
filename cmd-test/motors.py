@@ -1,4 +1,4 @@
-from phoenix5 import NeutralMode, WPI_TalonSRX, WPI_VictorSPX, IMotorController
+from phoenix5 import NeutralMode, WPI_TalonSRX, WPI_VictorSPX
 from rev import SparkMax, SparkLowLevel
 
 # think of this file as an abstract class because it isn't really a class but it contains the
