@@ -5,6 +5,9 @@ from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.controller import PPLTVController
 from pathplannerlib.config import RobotConfig
 from wpilib import DriverStation
+from pathplannerlib import PathPlanner, PathPlannerTrajectory, AutoBuilder, PathConstraints
+from wpilib.geometry import Pose2d
+from wpilib.kinematics import ChassisSpeeds
 
 class DriveSubsystem(Subsystem):
 
@@ -12,9 +15,8 @@ class DriveSubsystem(Subsystem):
         self.front_left = m.createTalonSRX(0, neutral_mode=m.NeutralMode.Coast)
         self.back_left = m.createVictorSPX(1, neutral_mode=m.NeutralMode.Coast)
         self.front_right = m.createVictorSPX(2, neutral_mode=m.NeutralMode.Coast)
-        self.back_right =m.createVictorSPX(3, neutral_mode=m.NeutralMode.Coast).
+        self.back_right =m.createVictorSPX(3, neutral_mode=m.NeutralMode.Coast)
 
-        
         # Group the left and right motors
         self.left_motors = wpilib.MotorControllerGroup(self.left_front_motor, self.left_rear_motor)
         self.right_motors = wpilib.MotorControllerGroup(self.right_front_motor, self.right_rear_motor)
