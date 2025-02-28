@@ -18,7 +18,7 @@ class MyRobot(wpi.TimedRobot):
     # def robotPeriodic(self):
 
     def testPeriodic(self):
-        self.arm.resetAndCalibrate()
+        self.arm.initializeArm()
     
     # Assigning buttons on selected controller to
     def teleopPeriodic(self):

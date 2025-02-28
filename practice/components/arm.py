@@ -7,11 +7,25 @@ from typing import Literal
 
 
 class Arm:
-    GEAR_BOX_RATIO_ARM = 64
-    ARM_MOTOR_POWER_MANUAL = 0.15
-    ARM_MOTOR_POWER_AUTO = 0.25
-    ROLLER_POWER = 0.25
+    ARM_GEARBOX_RATIO = 64    #(num rotations of motor):1
+    ARM_MANUAL_POWER = 0.15   # 0 - 1
+    ARM_AUTO_POWER = 0.25     # 0 - 1
+    ARM_ROLLER_POWER = 0.25   # 0 - 1
+    ARM_ROTATION_DELTA = 45   # degrees
+
+    # change if you want a software or hardware limit control.
+    # hardware uses limit switches and is most accurate, software relies only on encoder.
+    # options, please type as is: switch / encoder
     RETRACTION_LIMIT = "switch"
+
+    # DO NOT DELETE > These check if the variables are valid. 
+    # Code will NOT deploy if variable is configured incorrectly.
+    assert ARM_GEARBOX_RATIO >= 0
+    assert ARM_MANUAL_POWER >= 0 and ARM_MANUAL_POWER <= 1
+    assert ARM_AUTO_POWER >= 0 and ARM_AUTO_POWER <= 1
+    assert ARM_ROLLER_POWER >= 0 and ARM_ROLLER_POWER <= 1
+    assert ARM_ROTATION_DELTA > 0 and ARM_ROTATION_DELTA <= 90
+    assert RETRACTION_LIMIT in ["switch", "encoder"]
 
     def __init__(self):
         # create MotorController reference reference for the intake mechanism
@@ -44,52 +58,60 @@ class Arm:
         self.arm_encoder.setPosition(0)
 
     def retractArm(self):  
-        '''retracts arm''' 
-        deltaAngle = 45
+        '''Automatically retracts arm. Implemented primarily for Autonomous phase.''' 
+        # Offset - Encoder reads angle as negative when extended. We add the delta for our calculations.
+        # As the encoder approaches our robot's neutral position, the offset will ensure it approaches 
+        # our intended change in rotation.
+        offset = Arm.ARM_ROTATION_DELTA
         self.__switchingArmState__ = True
         self.__setExtended__ = False
+        self.__isExtended__ = False
 
         # For retract arm: we get the encoder value as given (negative when extended)
         # We want to make it so that the motor turns until it reaches its limit
-        currentRotations = self.getArmRotations(enableCutOff=True, cutoff="positive")
-        
-        targetChange = 45
+        # Assuming the angle is correct, it should be within 45 degrees forward.
+        currentRotations = self.getArmAngle(enableCutOff=True, cutoff="positive")
+    
+        if (currentRotations + offset < Arm.ARM_ROTATION_DELTA):
+            # Speed check. Set motor to a minimum low speed if arm approaches destination (at least 1/3 more to go)
+            # Otherwise, slow down as it approaches the target.
+            if (currentRotations > Arm.ARM_ROTATION_DELTA / 3):
+                speed = ((currentRotations) / Arm.ARM_ROTATION_DELTA) * Arm.ARM_AUTO_POWER
+            else:
+                speed = Arm.ARM_MANUAL_POWER
 
-        # two implementations are provided: physical limit (switch) or soft limit (encoder)
-        # switch recommended!
-        if (currentRotations + deltaAngle < targetChange):
-            speed = ((currentRotations) / targetChange) * Arm.ARM_MOTOR_POWER_AUTO if currentRotations > targetChange/3 else Arm.ARM_MOTOR_POWER_MANUAL
-
+            # two implementations are provided: physical limit (switch) or soft limit (encoder)
+            # switch recommended! configure in line 18 
             if Arm.RETRACTION_LIMIT == "switch":
+                # Limit switch solution: arm continues to retract until the switch is tripped. 
                 if self.arm_limit.getPressed():
-                    self.calibrate()
-                    self.__switchingArmState__ = False
+                    self.calibrateArm()
                 else:
                     self.arm_motor.set(speed=speed)
 
+            # using the encoder, the motor's speed is always limited to manual speed.
+            # this prevents the arm from shaking too much, which can affect the encoder reading.
             elif Arm.RETRACTION_LIMIT == "encoder":               
                 if currentRotations <= 0:
-                    self.calibrate()
+                    self.calibrateArm()
                 else:
-                    self.arm_motor.set(speed=speed)
+                    self.arm_motor.set(speed=Arm.ARM_MANUAL_POWER)
+            
 
     def extendArm(self):
-        '''extends arm''' 
+        '''Automatically extends arm. Implemented primarily for Autonomous phase.''' 
         self.__switchingArmState__ = True
         self.__setExtended__ = True
 
         # For extend arm: we negate the encoder value as its negative when extended.
         # We want to make it so that the motor turns until it reaches its limit
-        currentRotations = -self.getArmRotations(enableCutOff=True, cutoff="negative")
-        
-        targetChange = 45
+        currentRotations = -self.getArmAngle(enableCutOff=True, cutoff="negative")
 
-        # two implementations are provided: physical limit (switch) or soft limit (encoder)
-        # switch recommended!
-        if (currentRotations < targetChange):
-            speed = (1-((currentRotations) / targetChange)) * Arm.ARM_MOTOR_POWER_AUTO if currentRotations > (2/3 * targetChange) else Arm.ARM_MOTOR_POWER_MANUAL
+        if (currentRotations < Arm.ARM_ROTATION_DELTA):
+            
+            speed = (1-((currentRotations) / Arm.ARM_ROTATION_DELTA)) * Arm.ARM_AUTO_POWER if currentRotations > (2/3 * Arm.ARM_ROTATION_DELTA) else Arm.ARM_MANUAL_POWER
     
-        if currentRotations > targetChange:
+        if currentRotations > Arm.ARM_ROTATION_DELTA:
             self.arm_motor.set(0)
             self.__switchingArmState__ = False
         else:
@@ -132,9 +154,9 @@ class Arm:
             direction = 0
 
         if (not(self.__isExtended__) and direction < 0):
-            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
+            self.arm_motor.set(direction * Arm.ARM_MANUAL_POWER)
         elif(not(self.__isRetracted__) and direction > 0):
-            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
+            self.arm_motor.set(direction * Arm.ARM_MANUAL_POWER)
         else:
             self.arm_motor.set(0)
 
@@ -142,7 +164,7 @@ class Arm:
         '''Checks position of arm. Basically a software limit check.'''
 
         # Calculate encoder counts relative to arm, and convert to degrees
-        armAngle = self.getArmRotations()
+        armAngle = self.getArmAngle()
         print(self.arm_encoder.getPosition())
         # # Check if arm is extended (set to pick up algae)
         # if armAngle >= 45 * 64:
@@ -180,9 +202,9 @@ class Arm:
             self.__calibrated__ = False
 
     def activateRollers(self, direction: float):
-        self.roller_motor.set(direction * Arm.ROLLER_POWER)
+        self.roller_motor.set(direction * Arm.ARM_ROLLER_POWER)
 
-    def resetAndCalibrate(self):
+    def initializeArm(self):
         # to be done in the pit: executes only during Test mode
 
         # On startup: the robot is considered "not calibrated". 
@@ -193,20 +215,21 @@ class Arm:
         # Limit switch mounted on robot neutral point. 
         # Robot is considered "calibrated" and retracted once triggered, and motor is set to standby
         if self.arm_limit.getPressed():
-            self.calibrate()
+            self.calibrateArm()
 
-    def calibrate(self):
+    def calibrateArm(self):
         self.__isRetracted__ = True
         self.__calibrated__ = True
+        self.__switchingArmState__ = False
         self.arm_motor.set(0)
         self.arm_encoder.setPosition(0)
 
     
-    def getArmRotations(self, enableCutOff: bool = False, cutoff: str = Literal["negative", "positive"]) -> float:
+    def getArmAngle(self, enableCutOff: bool = False, cutoff: str = Literal["negative", "positive"]) -> float:
         '''returns arm rotations relative to arm itself, not the motor.'''
 
         # note that encoder is in the negatives when it is extended.
-        position = (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 360
+        position = (self.arm_encoder.getPosition() / Arm.ARM_GEARBOX_RATIO) * 360
 
         if enableCutOff:
             match(cutoff):
