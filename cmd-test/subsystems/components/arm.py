@@ -120,23 +120,6 @@ class Arm:
         Set the target position for the arm motor to rotate 45 degrees
         self.arm_motor.getPIDController().setReference(target_position, m.SparkMax.ControlType.kPosition)        
         '''
-        
-    def manualArmControl(self, dpad: float):
-        self.checkArmPosition()
-
-        if (dpad == 90):
-            direction = -1
-        elif (dpad == 270):
-            direction = 1
-        else:
-            direction = 0
-
-        if (not(self.__isExtended__) and direction < 0):
-            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
-        elif(not(self.__isRetracted__) and direction > 0):
-            self.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
-        else:
-            self.arm_motor.set(0)
 
     def checkArmPosition(self):
         '''Checks position of arm. Basically a software limit check.'''
@@ -154,14 +137,12 @@ class Arm:
         # Check if arm is extended (set to pick up algae)
         if armAngle <= -45:
             self.__isExtended__ = True
-            print("CANT GO ANY MORE CAPTAIN")
         else:
             self.__isExtended__ = False
 
         # Check if arm is retracted (set to dispense coral or algae)
         if (self.arm_limit.get() and not(self.__calibrated__)):
             self.arm_encoder.setPosition(0)        
-            print("Retracted!")
             self.__calibrated__ = True
             self.__isRetracted__ = True
 
@@ -181,19 +162,6 @@ class Arm:
 
     def activateRollers(self, direction: float):
         self.roller_motor.set(direction * Arm.ROLLER_POWER)
-
-    def resetAndCalibrate(self):
-        # to be done in the pit: executes only during Test mode
-
-        # On startup: the robot is considered "not calibrated". 
-        # Low power delivered to motor of arm to wind it back to its neutral position.
-        if not(self.__calibrated__):
-            self.arm_motor.set(0.05)
-        
-        # Limit switch mounted on robot neutral point. 
-        # Robot is considered "calibrated" and retracted once triggered, and motor is set to standby
-        if self.arm_limit.getPressed():
-            self.calibrate()
 
     def calibrate(self):
         self.__isRetracted__ = True

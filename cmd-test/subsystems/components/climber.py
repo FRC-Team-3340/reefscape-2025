@@ -22,6 +22,10 @@ class Climber:
         else:
             direction = 0
 
+        self.manualClimb(direction=direction)
+
+
+    def manualClimb(self, direction):
         self.__isActive__ = True if abs(self.climber_motor.getBusVoltage()) > 0 else False
         
         self.climber_motor.set(direction * self.__power__)
