@@ -9,6 +9,8 @@ from subsystems.drive_subsystem import DriveTrainSubsystem
 from subsystems.climber_subsystem import ClimberSubsystem
 from subsystems.pieces_subsystem import PiecesSubsystem
 
+from wpilib import PS4Controller
+
 
 class RobotContainer():
     CONTROLLER_PORT = 0
@@ -17,7 +19,7 @@ class RobotContainer():
 
     def __init__(self):
         self.robotDrive = DriveTrainSubsystem()
-        self.driverController = wpi.PS4Controller(port=RobotContainer.CONTROLLER_PORT)
+        self.driverController = PS4Controller(port=RobotContainer.CONTROLLER_PORT)
 
         match(RobotContainer.CONTROL_SCHEME):
             case("tank"):
@@ -52,4 +54,8 @@ class RobotContainer():
                 )
         
     def configureBindings(self):
-        commands2.button.
+        btn.JoystickButton(
+            self.driverController, PS4Controller.Button.kSquare
+        ).onTrue(
+            
+        )
