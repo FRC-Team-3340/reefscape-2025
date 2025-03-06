@@ -17,7 +17,7 @@ class Drive(DifferentialDrive):
     # By default, the left train is inverted. At least ONE drive train must be inverted.
 
     '''
-    MAX_POWER = 0.25           
+    MAX_POWER = 0.3          
     INVERT_LEFT = True  
     INVERT_RIGHT = False
 
@@ -55,6 +55,4 @@ class Drive(DifferentialDrive):
         # initialize parent class and create a reference for the robot.
         super().__init__(leftMotor=left_train, rightMotor=right_train)
         # super().__init__(leftMotor=front_left, rightMotor=front_right)
-
-
         self.setMaxOutput(maxOutput=Drive.MAX_POWER)

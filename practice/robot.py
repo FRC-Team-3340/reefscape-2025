@@ -38,7 +38,7 @@ class MyRobot(wpi.TimedRobot):
         self.drive.tankDrive(self.controller.getRawAxis(1),
                                  self.controller.getRawAxis(5))
             # self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
-
+#CHECK BINDINGS
         self.climber.climb(self.controller.getPOV())
         self.arm.manualArmControl(self.controller.getPOV())
         
@@ -50,7 +50,8 @@ class MyRobot(wpi.TimedRobot):
         self.stage = 0
         self.timer.start()
 
-    def autonomousPeriodic(self):
+#move forward 36in and release coral
+   ''' def autonomousPeriodic(self):
         match(self.stage):
             case 0:
                 if self.timer.get() < 5:
@@ -68,5 +69,30 @@ class MyRobot(wpi.TimedRobot):
                     self.stage += 1
             case 3:
                 self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
+                self.timer.stop()'''
+
+
+  def autonomousPeriodic(self):
+        match(self.stage):
+            case 0:
+                if self.timer.get() < 5:
+                    self.drive.arcadeDrive(xSpeed=.75, zRotation=0)
+                else:
+                    self.stage += 1
+            case 1:
+                self.drive.arcadeDrive(xSpeed=0, zRotation=0)
+                if self.timer.get() > 10:
+                    self.stage += 2
+            case 2:
+                if self.timer.get() < 15:
+                    self.drive.arcadeDrive(xSpeed=-.75, zRotation=0)
+                else:
+                    self.stage += 1
+            case 3:
+                self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
                 self.timer.stop()
 
+      self.setMaxOutput
+
+RPM --> RPS --> 
+432/6 RPS 
