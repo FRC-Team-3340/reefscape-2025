@@ -60,5 +60,7 @@ class RobotContainer():
             
         )
         btn.JoystickButton(
-            self.driverController, 
+            self.driverController, PS4Controller.Button.kL3
+        ).onTrue(
+            command=lambda:self.robotDrive.setMaxOutput(self.robotDrive.driveTrain.MAX_POWER / 2)
         )
