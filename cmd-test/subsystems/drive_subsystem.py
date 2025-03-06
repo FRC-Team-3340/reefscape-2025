@@ -1,6 +1,15 @@
 from commands2 import Subsystem
 from components.drive import Drive
 
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.controller import PPLTVController
+from pathplannerlib.config import RobotConfig
+from wpilib import DriverStation, SmartDashboard, Field2d
+from wpimath.geometry import Pose2d, Rotation2d
+from wpimath.kinematics import ChassisSpeeds, DifferentialDriveKinematics, DifferentialDriveOdometry, DifferentialDriveWheelPositions
+
+from navx import AHRS
+
 class DriveTrainSubsystem(Subsystem):
     def __init__(self):
         '''Creates new DriveSubsystem'''
@@ -8,6 +17,19 @@ class DriveTrainSubsystem(Subsystem):
 
         # Port all code from components.Drive here if you want to use less files :D
         self.driveTrain = Drive()
+        self.gyro = AHRS(comType=AHRS.NavXComType.kMXP_SPI)
+
+        # PathPlanner setup
+        self.__odometry__ = DifferentialDriveOdometry()
+        self.__kinematics__ = DifferentialDriveKinematics()
+
+        config = RobotConfig.fromGUISettings()      # Configure in FRC PathPlanner app
+
+        AutoBuilder.configure(
+            
+        )
+
+
 
 
     def arcadeDrive(self, fwd: float, rot: float, exp: bool = False):
@@ -42,6 +64,9 @@ class DriveTrainSubsystem(Subsystem):
             rev: button for reversing. holding both fwd and rev cancel each other out.
             rot: rotation axis.
 
+        
+        Implementation is still a bit jank so yeah...
+
         '''
 
         direction = int(fwd) - int(rev)
@@ -57,3 +82,15 @@ class DriveTrainSubsystem(Subsystem):
 
             pwr: maximum power of robot. 
         '''
+        self.driveTrain.setMaxOutput(pwr)
+
+    def getPose(self) -> Pose2d:
+        return self.__odometry__.getPose()
+    
+    def resetPose(self, pose: Pose2d):
+        return self.__odometry__.resetPosition(gyroAngle=self.gyro.getRotation2d(), pose=pose)
+    
+    def getRobotRelativeSpeeds(self) -> ChassisSpeeds:
+        return self.__kinematics__.toChassisSpeeds(getModuleStates())
+    
+    public Diff
