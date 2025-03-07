@@ -19,7 +19,18 @@ class RobotContainer():
 
     def __init__(self):
         self.robotDrive = DriveTrainSubsystem()
+        self.robotClimber = ClimberSubsystem()
+        self.robotArm = PiecesSubsystem()
         self.driverController = PS4Controller(port=RobotContainer.CONTROLLER_PORT)
+
+        self.robotArm.setDefaultCommand(
+            cm2.runcommand(
+                lambda: self.robotArm.activateRollers(
+
+                )
+            )
+        )
+        
 
         match(RobotContainer.CONTROL_SCHEME):
             case("tank"):
@@ -52,6 +63,7 @@ class RobotContainer():
                         )
                     )
                 )
+            
         
     def configureBindings(self):
         btn.JoystickButton(
@@ -63,4 +75,28 @@ class RobotContainer():
             self.driverController, PS4Controller.Button.kL3
         ).onTrue(
             command=lambda:self.robotDrive.setMaxOutput(self.robotDrive.driveTrain.MAX_POWER / 2)
+        ).onFalse (
+            command = lambda: self.robotDrive.setMaxOutput(self.robotDrive.driveTrain.MAX_POWER)
         )
+
+        btn.JoystickButton(
+            self.driverController, PS4Controller.Button.kSquare
+        ).onTrue(
+            command = lambda: self.robotArm.extendArm()
+        )
+        
+        btn.JoystickButton(
+            self.driverController, PS4Controller.Button.kTriangle
+        ).onTrue(
+            command = lambda: self.robotArm.extendArm()
+        )  
+
+        # USE POVBUTTON FOR MANUAL CONTROL!!!
+        btn.POVButton(
+            self.driverController,0
+            
+        ).onTrue(
+            command = lambda: self.robotClimber.manualClimb(direction:1)
+        )
+
+    
