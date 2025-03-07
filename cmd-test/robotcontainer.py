@@ -73,12 +73,9 @@ class RobotContainer():
         )
         btn.JoystickButton(
             self.driverController, PS4Controller.Button.kL3
-        ).onTrue(
-            command=lambda:self.robotDrive.setMaxOutput(self.robotDrive.driveTrain.MAX_POWER / 2)
-        ).onFalse (
-            command = lambda: self.robotDrive.setMaxOutput(self.robotDrive.driveTrain.MAX_POWER)
+        ).whileTrue(
+            
         )
-
         btn.JoystickButton(
             self.driverController, PS4Controller.Button.kSquare
         ).onTrue(
@@ -96,7 +93,7 @@ class RobotContainer():
             self.driverController,0
             
         ).onTrue(
-            command = lambda: self.robotClimber.manualClimb(direction:1)
+            command = lambda: self.robotClimber.manualClimb(direction=1)
         )
 
     
