@@ -1,9 +1,6 @@
 from wpilib import MotorControllerGroup
-
 from wpilib.drive import DifferentialDrive
-import wpilib.drive
-
-import components.motors as m
+import subsystems.components.motors as m
 
 
 class Drive(DifferentialDrive):

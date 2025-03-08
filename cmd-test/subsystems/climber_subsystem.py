@@ -1,5 +1,5 @@
 from commands2 import Subsystem
-from components.climber import Climber
+from subsystems.components.climber import Climber
 from typing import Literal
 
 class ClimberSubsystem(Subsystem):

@@ -21,9 +21,10 @@ class TimedMove(cmd2.Command):
         self.drive.driveTrain.setMaxOutput(self.pwr)
         
         if self.timer.get() < self.time:
-            self.drive.arcadeDrive(fwd=1, rot=0)
+            self.drive.arcadeDrive(fwd=1, rot=0, exp=False)
 
     def stop(self, interrupt:bool):
-        self.drive.arcadeDrive(fwd=0 rot=0)
+        self.drive.arcadeDrive(fwd=0,
+                                rot=0, exp=False)
         self.drive.driveTrain.setMaxOutput(self.drive.driveTrain.MAX_POWER)
     

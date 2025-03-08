@@ -41,4 +41,7 @@ class MyRobot(TimedCommandRobot):
         
         def testInit(self):
             CommandScheduler.getInstance().cancelAll()
+
+        def testPeriodic(self):
+            self.container.robotArm.initializeArm()
         

@@ -51,48 +51,43 @@ class MyRobot(wpi.TimedRobot):
         self.timer.start()
 
 #move forward 36in and release coral
-   ''' def autonomousPeriodic(self):
-        match(self.stage):
-            case 0:
-                if self.timer.get() < 5:
-                    self.drive.arcadeDrive(xSpeed=.75, zRotation=0)
-                else:
-                    self.stage += 1
-            case 1:
-                self.drive.arcadeDrive(xSpeed=0, zRotation=0)
-                if self.timer.get() > 10:
-                    self.stage += 1
-            case 2:
-                if self.timer.get() < 15:
-                    self.drive.arcadeDrive(xSpeed=-.75, zRotation=0)
-                else:
-                    self.stage += 1
-            case 3:
-                self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
-                self.timer.stop()'''
+    ''' def autonomousPeriodic(self):
+            match(self.stage):
+                case 0:
+                    if self.timer.get() < 5:
+                        self.drive.arcadeDrive(xSpeed=.75, zRotation=0)
+                    else:
+                        self.stage += 1
+                case 1:
+                    self.drive.arcadeDrive(xSpeed=0, zRotation=0)
+                    if self.timer.get() > 10:
+                        self.stage += 1
+                case 2:
+                    if self.timer.get() < 15:
+                        self.drive.arcadeDrive(xSpeed=-.75, zRotation=0)
+                    else:
+                        self.stage += 1
+                case 3:
+                    self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
+                    self.timer.stop()'''
 
 
-  def autonomousPeriodic(self):
-        match(self.stage):
-            case 0:
-                if self.timer.get() < 5:
-                    self.drive.arcadeDrive(xSpeed=.75, zRotation=0)
-                else:
-                    self.stage += 1
-            case 1:
-                self.drive.arcadeDrive(xSpeed=0, zRotation=0)
-                if self.timer.get() > 10:
-                    self.stage += 2
-            case 2:
-                if self.timer.get() < 15:
-                    self.drive.arcadeDrive(xSpeed=-.75, zRotation=0)
-                else:
-                    self.stage += 1
-            case 3:
-                self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
-                self.timer.stop()
-
-      self.setMaxOutput
-
-RPM --> RPS --> 
-432/6 RPS 
+    def autonomousPeriodic(self):
+            match(self.stage):
+                case 0:
+                    if self.timer.get() < 5:
+                        self.drive.arcadeDrive(xSpeed=.75, zRotation=0)
+                    else:
+                        self.stage += 1
+                case 1:
+                    self.drive.arcadeDrive(xSpeed=0, zRotation=0)
+                    if self.timer.get() > 10:
+                        self.stage += 2
+                case 2:
+                    if self.timer.get() < 15:
+                        self.drive.arcadeDrive(xSpeed=-.75, zRotation=0)
+                    else:
+                        self.stage += 1
+                case 3:
+                    self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
+                    self.timer.stop()

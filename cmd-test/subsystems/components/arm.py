@@ -1,5 +1,5 @@
-import components.motors as m
-from components.switch import LimitSwitch
+import subsystems.components.motors as m
+from subsystems.components.switch import LimitSwitch
 from typing import Literal
 
 # Arm does not inherit from another class unlike switch or drive.

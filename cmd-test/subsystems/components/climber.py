@@ -1,4 +1,4 @@
-import components.motors as m
+import subsystems.components.motors as m
 
 class Climber:
     def __init__(self):
