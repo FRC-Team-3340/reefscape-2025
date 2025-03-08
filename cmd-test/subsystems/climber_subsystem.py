@@ -1,5 +1,5 @@
 from commands2 import Subsystem
-from components.climber import Climber
+from subsystems.components.climber import Climber
 from typing import Literal
 
 class ClimberSubsystem(Subsystem):
@@ -11,4 +11,6 @@ class ClimberSubsystem(Subsystem):
     def manualClimb(self, direction: float):
         self.climber.manualClimb(direction)
 
+    def stopClimbing(self):
+        self.climber.stopClimbing()
     

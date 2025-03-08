@@ -38,7 +38,7 @@ class MyRobot(wpi.TimedRobot):
         self.drive.tankDrive(self.controller.getRawAxis(1),
                                  self.controller.getRawAxis(5))
             # self.drive.arcadeDrive(self.controller.getRawAxis(1), self.controller.getRawAxis(4))
-
+#CHECK BINDINGS
         self.climber.climb(self.controller.getPOV())
         self.arm.manualArmControl(self.controller.getPOV())
         

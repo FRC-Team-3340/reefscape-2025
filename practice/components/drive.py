@@ -56,5 +56,4 @@ class Drive(DifferentialDrive):
         super().__init__(leftMotor=left_train, rightMotor=right_train)
         # super().__init__(leftMotor=front_left, rightMotor=front_right)
 
-
         self.setMaxOutput(maxOutput=Drive.MAX_POWER)
