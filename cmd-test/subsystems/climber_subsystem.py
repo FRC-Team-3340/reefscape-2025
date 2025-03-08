@@ -11,4 +11,6 @@ class ClimberSubsystem(Subsystem):
     def manualClimb(self, direction: float):
         self.climber.manualClimb(direction)
 
+    def stopClimbing(self):
+        self.climber.stopClimbing()
     

@@ -9,7 +9,13 @@ from subsystems.drive_subsystem import DriveTrainSubsystem
 from subsystems.climber_subsystem import ClimberSubsystem
 from subsystems.pieces_subsystem import PiecesSubsystem
 
+from commands.DeepClimb import DeepClimb
+from commands.UndoClimb import UndoClimb
+from commands.HalfDrive import HalfDrive
+
 from wpilib import PS4Controller
+
+
 
 
 class RobotContainer():
@@ -67,14 +73,9 @@ class RobotContainer():
         
     def configureBindings(self):
         btn.JoystickButton(
-            self.driverController, PS4Controller.Button.kSquare
-        ).onTrue(
-            
-        )
-        btn.JoystickButton(
             self.driverController, PS4Controller.Button.kL3
         ).whileTrue(
-            
+            command = lambda: HalfDrive()
         )
         btn.JoystickButton(
             self.driverController, PS4Controller.Button.kSquare
@@ -85,15 +86,36 @@ class RobotContainer():
         btn.JoystickButton(
             self.driverController, PS4Controller.Button.kTriangle
         ).onTrue(
-            command = lambda: self.robotArm.extendArm()
+            command = lambda: self.robotArm.retractArm()
         )  
 
         # USE POVBUTTON FOR MANUAL CONTROL!!!
         btn.POVButton(
-            self.driverController,0
+            self.driverController, 0
             
-        ).onTrue(
-            command = lambda: self.robotClimber.manualClimb(direction=1)
+        ).whileTrue(
+            command = lambda: self.DeepClimb()
+        )
+
+        btn.POVButton(
+            self.driverController, 180
+        ).whileTrue(
+            command = lambda: self.UndoClimb()
+        )
+        btn.POVButton(
+            self.driverController, 90
+        ).whileTrue(
+            command = lambda: self.robotArm.manualArmControl(1)
+        ).onFalse(
+            command = lambda: self.robotArm.manualArmControl(0)
+        )
+
+        btn.POVButton(
+            self.driverController, 270
+        ).whileTrue(
+            command = lambda:self.robotArm.manualArmControl(-1)
+        ).onFalse(
+            command = lambda: self.robotArm.manualArmControl(0)
         )
 
     

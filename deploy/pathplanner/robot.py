@@ -62,7 +62,7 @@ class MyRobot(wpi.TimedRobot):
                 else:
                     self.stage += 1
             case 1:
-                self.drive.arcadeDrive(xSpeed=0, zRotation=0)
+                self.drive.arcadeDrive(0, 0.5)
                 if self.timer.get() > 10:
                     self.stage += 1
             case 2:
@@ -73,3 +73,16 @@ class MyRobot(wpi.TimedRobot):
             case 3:
                 self.drive.arcadeDrive(xSpeed=.0, zRotation=0)
                 self.timer.stop()
+
+
+     def autonomousPeriodic(self):
+      # Drive forward for 2 seconds
+        if self.timer.get() < 2.0:
+            self.drive.arcadeDrive(0.5, 0)  # Move forward at half speed
+        # Turn right for 1 second
+        elif self.timer.get() < 3.0:
+            self.drive.arcadeDrive(0, 0.5)  # Turn right at half speed
+        # Stop
+        else:
+            self.drive.arcadeDrive(0, 0)  # Stop the robot
+        

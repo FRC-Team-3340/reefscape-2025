@@ -39,6 +39,16 @@ class PiecesSubsystem(Subsystem):
             else:
                 self.arm.arm_motor.set(0)
 
+    def manualArmControl(self, direction = float):
+        if not(self.arm.__switchingArmState__):
+            if (not(self.arm.__isExtended__) and direction < 0):
+                self.arm.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
+            elif(not(self.arm.__isRetracted__) and direction > 0):
+                self.arm.arm_motor.set(direction * Arm.ARM_MOTOR_POWER_MANUAL)
+            else:
+                self.arm.arm_motor.set(0)
+
+
     def initializeArm(self):
         # to be done in the pit: executes only during Test mode
 
