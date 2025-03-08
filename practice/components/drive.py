@@ -17,9 +17,9 @@ class Drive(DifferentialDrive):
     # By default, the left train is inverted. At least ONE drive train must be inverted.
 
     '''
-    MAX_POWER = 0.25           
+    MAX_POWER = 0.6
     INVERT_LEFT = True  
-    INVERT_RIGHT = False
+    INVERT_RIGHT = not(INVERT_LEFT)
 
     def __init__(self):
         front_left = m.createTalonSRX(0, neutral_mode=m.NeutralMode.Coast)
