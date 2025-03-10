@@ -143,6 +143,7 @@ class Arm:
 
         # Check if arm is retracted (set to dispense coral or algae)
         if (self.arm_limit.get() and not(self.__calibrated__)):
+            print("Defunct")
             self.arm_encoder.setPosition(0)        
             self.__calibrated__ = True
             self.__isRetracted__ = True
@@ -191,7 +192,6 @@ class Arm:
     def initializeArm(self):
         if not(self.__initialized__):
             # to be done in the pit: executes only during Test mode
-
             # On startup: the robot is considered "not calibrated". 
             # Low power delivered to motor of arm to wind it back to its neutral position.
             if not(self.__calibrated__):
