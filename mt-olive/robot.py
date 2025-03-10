@@ -18,7 +18,6 @@ class MyRobot(wpi.TimedRobot):
         self.cs.launch()
 
         
-        
         # self.mySwitch = LimitSwitch(0)
 
     # def robotPeriodic(self):
