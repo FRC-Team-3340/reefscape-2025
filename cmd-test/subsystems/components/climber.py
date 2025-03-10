@@ -1,4 +1,4 @@
-import subsystems.components.motors as m
+import components.motors as m
 
 class Climber:
     def __init__(self):
@@ -22,13 +22,26 @@ class Climber:
         else:
             direction = 0
 
-        self.manualClimb(direction=direction)
-
-
-    def manualClimb(self, direction):
         self.__isActive__ = True if abs(self.climber_motor.getBusVoltage()) > 0 else False
         
         self.climber_motor.set(direction * self.__power__)
 
     def getActive(self) -> bool:
         return self.__isActive__
+    
+
+
+    '''
+    Create algorithm:
+    Over time, make power less, but using the   
+
+    counteract 
+
+    if power cut to climber after climbing, motor turns in reverse
+    
+    70lbs to kg*9.8m/s =
+    if encoder value = -, we need to turn the motor forward (+) 
+    calibrate every second 
+
+
+    '''

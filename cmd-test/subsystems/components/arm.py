@@ -1,18 +1,23 @@
-import subsystems.components.motors as m
-from subsystems.components.switch import LimitSwitch
+import components.motors as m
+from components.switch import LimitSwitch
 from typing import Literal
 
 # Arm does not inherit from another class unlike switch or drive.
 # Arm consists of more than just one motor.
-
+ARM_GEARBOX_RATIO = 64
+ARM_MANUAL_POWER = 0.15
+ARM_AUTO_POWER = 0.25
+ROLLER_POWER = 0.3
+RETRACT_LIMIT = "switch"
+DISABLE_RETRACT_LIMIT = False
+DISABLE_EXTEND_LIMIT = False
 
 class Arm:
-    GEAR_BOX_RATIO_ARM = 64
-    ARM_MOTOR_POWER_MANUAL = 0.15
-    ARM_MOTOR_POWER_AUTO = 0.25
-    ROLLER_POWER = 0.25
-    RETRACTION_LIMIT = "switch"
-
+    '''
+    Class for the robot arm.
+    This class 
+    
+    '''
     def __init__(self):
         # create MotorController reference reference for the intake mechanism
         self.roller_motor = m.createTalonSRX(
@@ -35,6 +40,7 @@ class Arm:
 
         # state variables for robot. avoid access outside of class.
         self.__calibrated__ = False
+        self.__initialized__ = False
         self.__isExtended__ = False
         self.__isRetracted__ = False
 
@@ -58,16 +64,16 @@ class Arm:
         # two implementations are provided: physical limit (switch) or soft limit (encoder)
         # switch recommended!
         if (currentRotations + deltaAngle < targetChange):
-            speed = ((currentRotations) / targetChange) * Arm.ARM_MOTOR_POWER_AUTO if currentRotations > targetChange/3 else Arm.ARM_MOTOR_POWER_MANUAL
+            speed = ((currentRotations) / targetChange) * Arm.ARM_AUTO_POWER if currentRotations > targetChange/3 else Arm.ARM_MANUAL_POWER
 
-            if Arm.RETRACTION_LIMIT == "switch":
+            if Arm.RETRACT_LIMIT == "switch":
                 if self.arm_limit.getPressed():
                     self.calibrate()
                     self.__switchingArmState__ = False
                 else:
                     self.arm_motor.set(speed=speed)
 
-            elif Arm.RETRACTION_LIMIT == "encoder":               
+            elif Arm.RETRACT_LIMIT == "encoder":               
                 if currentRotations <= 0:
                     self.calibrate()
                 else:
@@ -87,7 +93,7 @@ class Arm:
         # two implementations are provided: physical limit (switch) or soft limit (encoder)
         # switch recommended!
         if (currentRotations < targetChange):
-            speed = (1-((currentRotations) / targetChange)) * Arm.ARM_MOTOR_POWER_AUTO if currentRotations > (2/3 * targetChange) else Arm.ARM_MOTOR_POWER_MANUAL
+            speed = (1-((currentRotations) / targetChange)) * Arm.ARM_AUTO_POWER if currentRotations > (2/3 * targetChange) else Arm.ARM_MANUAL_POWER
     
         if currentRotations > targetChange:
             self.arm_motor.set(0)
@@ -126,7 +132,6 @@ class Arm:
 
         # Calculate encoder counts relative to arm, and convert to degrees
         armAngle = self.getArmRotations()
-        print(self.arm_encoder.getPosition())
         # # Check if arm is extended (set to pick up algae)
         # if armAngle >= 45 * 64:
         #     self.__isExtended__ = True
@@ -135,25 +140,26 @@ class Arm:
         #     self.__isExtended__ = False
 
         # Check if arm is extended (set to pick up algae)
-        if armAngle <= -45:
+        if armAngle <= -120 and not(Arm.DISABLE_EXTEND_LIMIT):
             self.__isExtended__ = True
         else:
             self.__isExtended__ = False
 
         # Check if arm is retracted (set to dispense coral or algae)
         if (self.arm_limit.get() and not(self.__calibrated__)):
+            print("Defunct")
             self.arm_encoder.setPosition(0)        
             self.__calibrated__ = True
             self.__isRetracted__ = True
 
 
-        if armAngle >= 5:
-            self.__isRetracted__ = True
+        # if armAngle >= 5:
+        #     self.__isRetracted__ = True
 
-            # Motor will recalibrate itself automatically once it is back on neutral position
-            if not(self.__calibrated__):
-                self.arm_encoder.setPosition(0)
-                self.__calibrated__ = True
+        #     # Motor will recalibrate itself automatically once it is back on neutral position
+        #     if not(self.__calibrated__):
+        #         self.arm_encoder.setPosition(0)
+        #         self.__calibrated__ = True
 
         elif int(armAngle) !=0:
             # The motor is not considered calibrated once away from neutral retracted position
@@ -174,7 +180,7 @@ class Arm:
         '''returns arm rotations relative to arm itself, not the motor.'''
 
         # note that encoder is in the negatives when it is extended.
-        position = (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 360
+        position = (self.arm_encoder.getPosition() / Arm.ARM_GEARBOX_RATIO) * 360
 
         if enableCutOff:
             match(cutoff):
@@ -185,3 +191,37 @@ class Arm:
 
         return position
     
+
+    
+    def initializeArm(self):
+        if not(self.__initialized__):
+            # to be done in the pit: executes only during Test mode
+            # On startup: the robot is considered "not calibrated". 
+            # Low power delivered to motor of arm to wind it back to its neutral position.
+            if not(self.__calibrated__):
+                self.arm_motor.set(0.05)
+            
+            # Limit switch mounted on robot neutral point. 
+            # Robot is considered "calibrated" and retracted once triggered, and motor is set to standby
+            if self.arm_limit.getPressed():
+                self.__initialized__ = True
+                self.calibrate()
+                print("Arm initialized!")
+    
+
+    def manualArmControl(self, dpad: float):
+        self.checkArmPosition()
+
+        if (dpad == 90):
+            direction = -1
+        elif (dpad == 270):
+            direction = 1
+        else:
+            direction = 0
+
+        if (not(self.__isExtended__) and direction < 0):
+            self.arm_motor.set(direction * Arm.ARM_MANUAL_POWER)
+        elif(not(self.__isRetracted__) and direction > 0):
+            self.arm_motor.set(direction * Arm.ARM_MANUAL_POWER)
+        else:
+            self.arm_motor.set(0)
