@@ -4,16 +4,17 @@ import subsystems.components.motors as m
 
 
 class Drive(DifferentialDrive):
-    ''' Drive class - inherits from Differential Drive. Represents the robot drive train.
+    ''' 
+    Inherits from Differential Drive. Represents the robot drive train.
     Class parameters to modify:
         MAX_POWER - Adjust maximum robot power (0-1, where 1 is full power)
         INVERT_LEFT - Inverts left drive train (assuming intake region is front)  
         INVERT_RIGHT - Inverts right drive train (assuming intake region is front)
 
+    '''
+
     # The way the motors are inverted may affect robot direction.
     # By default, the left train is inverted. At least ONE drive train must be inverted.
-
-    '''
     MAX_POWER = 0.25           
     INVERT_LEFT = True  
     INVERT_RIGHT = False
