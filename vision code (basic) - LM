@@ -1,0 +1,28 @@
+import wpilib
+from cscore import CameraServer
+
+class MyRobot(wpilib.TimedRobot):
+    def robotInit(self):
+        """
+        Initialize the camera server to start capturing video from camera.
+        """
+        self.camera = CameraServer.startAutomaticCapture()
+        self.camera.setResolution(320, 240)  #  resolution
+        self.camera.setFPS(30)  #  frames per second
+
+        # Get a video sink for processing (if needed later)
+        self.video_sink = CameraServer.getVideo()
+        
+        # Create an output stream to send processed frames
+        self.output_stream = CameraServer.putVideo("Processed", 320, 240)
+
+    def teleopPeriodic(self):
+        
+        frame = wpilib.vision.GripPipeline()  # Placeholder for  processing
+        timestamp, img = self.video_sink.grabFrame(frame)
+        
+        if timestamp > 0:
+            self.output_stream.putFrame(img)  # Sends the frame to the dashboard
+
+if __name__ == "__main__":
+    wpilib.run(MyRobot)
