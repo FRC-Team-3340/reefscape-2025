@@ -10,7 +10,7 @@ class Arm:
     GEAR_BOX_RATIO_ARM = 64
     ARM_MANUAL_POWER = 0.15
     ARM_AUTO_POWER = 0.25
-    ROLLER_POWER = 0.3
+    ROLLER_POWER = 0.5
     RETRACTION_LIMIT = "switch"
     OVERRIDE_EXTEND_LIMIT = False
 
@@ -163,6 +163,8 @@ class Arm:
             self.__calibrated__ = False
 
     def activateRollers(self, direction: float):
+        if direction>1:
+            print(self.roller_motor.get())
         self.roller_motor.set(direction * Arm.ROLLER_POWER)
 
     def calibrate(self):
