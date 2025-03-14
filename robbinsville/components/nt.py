@@ -1,6 +1,8 @@
-import ntcore
+import ntcore as nt
 
 class NetworkTable():
-    inst = ntcore.NetworkTableInstance.getDefault()
+    inst = nt.NetworkTableInstance.getDefault()
     datatable = inst.getTable("datatable")
+    
+    
     

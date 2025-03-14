@@ -1,9 +1,9 @@
 import wpilib as wpi
 import wpimath.controller
-import wpilib.CameraServer as CameraServer
+from wpilib import CameraServer
 import cv2
 import numpy as np
-from networktables import NetworkTables
+from ntcore import NetworkTables
 import math
 
 class MyRobot(wpi.TimedRobot):

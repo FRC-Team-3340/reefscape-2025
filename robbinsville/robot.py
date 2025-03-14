@@ -3,6 +3,7 @@ from wpilib import Joystick, SmartDashboard
 from components.drive import Drive
 from components.climber import Climber
 from components.arm import Arm
+import ntcore as nt
 
 
 import components.motors as m
@@ -16,9 +17,6 @@ class MyRobot(wpi.TimedRobot):
 
         self.cs = wpi.cameraserver.CameraServer()
         self.cs.launch()
-
-        
-        # self.mySwitch = LimitSwitch(0)
 
     # def robotPeriodic(self):
 
@@ -62,6 +60,9 @@ class MyRobot(wpi.TimedRobot):
                     self.stage +=1
             case 3:
                 self.arm.activateRollers(0)
+
+    # def updateRobotStats(self, drive: Drive):
+        # SmartDashboard.putNumber("Left Speed", drive.)
 
 
 #################
