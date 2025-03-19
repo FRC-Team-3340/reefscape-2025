@@ -18,10 +18,12 @@ class MyRobot(wpi.TimedRobot):
         self.cs = wpi.cameraserver.CameraServer()
         self.cs.launch()
 
-    # def robotPeriodic(self):
+    def robotPeriodic(self):
+        self.drive.updateDashboard()
+        self.climber.updateDashboard()
 
-    def testPeriodic(self):
-        self.arm.initializeArm()
+    # def testPeriodic(self):
+        # self.arm.initializeArm()
     
     # Assigning buttons on selected controller to
     def teleopPeriodic(self):
@@ -33,6 +35,8 @@ class MyRobot(wpi.TimedRobot):
         
         roller_direction = -self.controller.getRawAxis(2) + self.controller.getRawAxis(3)
         self.arm.activateRollers(roller_direction)
+
+        self.climber.toggleCageLock(self.controller.getRawButton(1))
 
     def autonomousInit(self):
         self.timer = wpi.Timer()

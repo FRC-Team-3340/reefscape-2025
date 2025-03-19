@@ -4,16 +4,16 @@ from typing import Literal
 
 # Arm does not inherit from another class unlike switch or drive.
 # Arm consists of more than just one motor.
+GEAR_BOX_RATIO_ARM = 64
+ARM_MANUAL_POWER = 0.15
+ARM_AUTO_POWER = 0.25
+ROLLER_POWER = 0.5
+RETRACTION_LIMIT = "switch"
+OVERRIDE_EXTEND_LIMIT = False
+
 
 
 class Arm:
-    GEAR_BOX_RATIO_ARM = 64
-    ARM_MANUAL_POWER = 0.15
-    ARM_AUTO_POWER = 0.25
-    ROLLER_POWER = 0.5
-    RETRACTION_LIMIT = "switch"
-    OVERRIDE_EXTEND_LIMIT = False
-
     def __init__(self):
         # create MotorController reference reference for the intake mechanism
         self.roller_motor = m.createTalonSRX(
@@ -60,16 +60,16 @@ class Arm:
         # two implementations are provided: physical limit (switch) or soft limit (encoder)
         # switch recommended!
         if (currentRotations + deltaAngle < targetChange):
-            speed = ((currentRotations) / targetChange) * Arm.ARM_AUTO_POWER if currentRotations > targetChange/3 else Arm.ARM_MANUAL_POWER
+            speed = ((currentRotations) / targetChange) * ARM_AUTO_POWER if currentRotations > targetChange/3 else ARM_MANUAL_POWER
 
-            if Arm.RETRACTION_LIMIT == "switch":
+            if RETRACTION_LIMIT == "switch":
                 if self.arm_limit.getPressed():
                     self.calibrate()
                     self.__switchingArmState__ = False
                 else:
                     self.arm_motor.set(speed=speed)
 
-            elif Arm.RETRACTION_LIMIT == "encoder":               
+            elif RETRACTION_LIMIT == "encoder":               
                 if currentRotations <= 0:
                     self.calibrate()
                 else:
@@ -89,7 +89,7 @@ class Arm:
         # two implementations are provided: physical limit (switch) or soft limit (encoder)
         # switch recommended!
         if (currentRotations < targetChange):
-            speed = (1-((currentRotations) / targetChange)) * Arm.ARM_AUTO_POWER if currentRotations > (2/3 * targetChange) else Arm.ARM_MANUAL_POWER
+            speed = (1-((currentRotations) / targetChange)) * ARM_AUTO_POWER if currentRotations > (2/3 * targetChange) else ARM_MANUAL_POWER
     
         if currentRotations > targetChange:
             self.arm_motor.set(0)
@@ -136,7 +136,7 @@ class Arm:
         #     self.__isExtended__ = False
 
         # Check if arm is extended (set to pick up algae)
-        if armAngle <= -120 and not(Arm.OVERRIDE_EXTEND_LIMIT):
+        if armAngle <= -120 and not(OVERRIDE_EXTEND_LIMIT):
             self.__isExtended__ = True
         else:
             self.__isExtended__ = False
@@ -165,7 +165,7 @@ class Arm:
     def activateRollers(self, direction: float):
         if direction>1:
             print(self.roller_motor.get())
-        self.roller_motor.set(direction * Arm.ROLLER_POWER)
+        self.roller_motor.set(direction * ROLLER_POWER)
 
     def calibrate(self):
         self.__isRetracted__ = True
@@ -178,7 +178,7 @@ class Arm:
         '''returns arm rotations relative to arm itself, not the motor.'''
 
         # note that encoder is in the negatives when it is extended.
-        position = (self.arm_encoder.getPosition() / Arm.GEAR_BOX_RATIO_ARM) * 360
+        position = (self.arm_encoder.getPosition() / GEAR_BOX_RATIO_ARM) * 360
 
         if enableCutOff:
             match(cutoff):
@@ -218,8 +218,15 @@ class Arm:
             direction = 0
 
         if (not(self.__isExtended__) and direction < 0):
-            self.arm_motor.set(direction * Arm.ARM_MANUAL_POWER)
+            self.arm_motor.set(direction * ARM_MANUAL_POWER)
         elif(not(self.__isRetracted__) and direction > 0):
-            self.arm_motor.set(direction * Arm.ARM_MANUAL_POWER)
+            self.arm_motor.set(direction * ARM_MANUAL_POWER)
         else:
             self.arm_motor.set(0)
+
+    def getRollerPower(self):
+        return ROLLER_POWER
+
+    def setRollerPower(self, new_pwr: float):
+        assert new_pwr >=0 and new_pwr <= 1
+        ROLLER_POWER = new_pwr

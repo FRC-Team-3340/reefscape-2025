@@ -1,4 +1,4 @@
-from wpilib import MotorControllerGroup
+from wpilib import MotorControllerGroup, SmartDashboard
 
 from wpilib.drive import DifferentialDrive
 from typing import Literal
@@ -18,6 +18,7 @@ INVERT_LEFT = True                  # Inverts left side of drive train. NOTE: on
 INVERT_RIGHT = not(INVERT_LEFT)     
 NEUTRAL_MODE = m.NeutralMode.Brake  # Idle mode for drive train (what the train does once you set it to neutral state (0)
 
+SmartDashboard.putBoolean("Invert", INVERT_LEFT)
 
 
 # ----DECLARATIONS---- #
@@ -26,15 +27,10 @@ NEUTRAL_MODE = m.NeutralMode.Brake  # Idle mode for drive train (what the train 
 front_left = m.createTalonSRX(0, neutral_mode=NEUTRAL_MODE)
 back_left = m.createVictorSPX(1, neutral_mode=NEUTRAL_MODE)
 front_right = m.createVictorSPX(2, neutral_mode=NEUTRAL_MODE)
-back_right = m.createVictorSPX(3, neutral_mode=NEUTRAL_MODE)
+back_right = m.createTalonSRX(3, neutral_mode=NEUTRAL_MODE)
 
 left_train = MotorControllerGroup(front_left, back_left)
-left_train.setInverted(INVERT_LEFT)
-
 right_train= MotorControllerGroup(front_right, back_right)
-right_train.setInverted(INVERT_RIGHT)
-        
-right_train.get()
 
 class Drive(DifferentialDrive):
     ''' Drive class - inherits from Differential Drive. Represents the robot drive train.
@@ -53,10 +49,26 @@ class Drive(DifferentialDrive):
         # initialize parent class and create a reference for the robot.
         super().__init__(leftMotor=left_train, rightMotor=right_train)
         # super().__init__(leftMotor=front_left, rightMotor=front_right)
-        self.setMaxOutput(maxOutput=Drive.MAX_POWER)
+        self.setMaxOutput(maxOutput=MAX_POWER)
+
+    def configureInvert(self):
+        left_train.setInverted(INVERT_LEFT)
+        right_train.setInverted(INVERT_RIGHT)
+
 
     def getTrainOutput(self, train: Literal['left', 'right']):
         if train == 'left':
             return left_train.get()
         if train == 'right':
             return right_train.get()
+        
+    def updateDashboard(self):
+        global INVERT_LEFT
+        SmartDashboard.putNumber("Left Output", self.getTrainOutput(train="left"))
+        SmartDashboard.putNumber("Right Output", self.getTrainOutput(train="right"))
+        
+        invert_setting = SmartDashboard.getBoolean("Invert", True)
+        if invert_setting != INVERT_LEFT:
+            INVERT_LEFT = invert_setting
+            self.configureInvert()
+
